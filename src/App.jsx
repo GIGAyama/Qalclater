@@ -1625,7 +1625,7 @@ const HomeView = ({ setView, stats, setStats, setConfigMode, initHost }) => {
 };
 
 // --- ホスト(先生) ルーム画面 ---
-const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, setConfigMode }) => {
+const HostRoomView = ({ peerState, setPeerState, broadcast, setView, setState, configMode, setConfigMode }) => {
   const [groups, setGroups] = useState([]); const [selectedGroup, setSelectedGroup] = useState('');
   const [time, setTime] = useState(3);
   const [selectedGrade, setSelectedGrade] = useState('すべて');
@@ -1661,6 +1661,18 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
       courseName: selectedGroup,
       gameMode: configMode
     };
+
+    // ホスト自身を参加者リストに追加し、全参加者のスコアをリセット
+    setPeerState(p => {
+      const resetParticipants = {};
+      Object.entries(p.participants).forEach(([id, participant]) => {
+        resetParticipants[id] = { ...participant, score: 0, combo: 0 };
+      });
+      resetParticipants[p.hostId] = { id: p.hostId, name: '先生', score: 0, combo: 0 };
+      const newP = { ...p, participants: resetParticipants };
+      newP.connections.forEach(c => c.send({ type: 'participants_update', data: newP.participants }));
+      return newP;
+    });
 
     setState(gameConfig);
     // 全クライアントにゲーム設定を送信して開始させる
@@ -1754,19 +1766,17 @@ const ClientJoinView = ({ initClient, urlHostId, setView }) => {
       </div>
       <h3 className="font-black text-2xl mb-4 text-[var(--text)] shrink-0">へやに入ります</h3>
 
-      {!urlHostId && (
-        <div className="mb-4 shrink-0">
-          <p className="font-bold mb-2 text-[var(--text)] opacity-70 text-sm">ルーム番号（数字）</p>
-          <input
-            type="text"
-            inputMode="numeric"
-            className="w-full border-[3px] border-[var(--text)] rounded-xl p-4 font-black text-2xl tracking-widest text-center outline-none focus:border-[var(--secondary)] bg-[var(--bg)]"
-            placeholder="123456"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value.replace(/[^0-9]/g, ''))}
-          />
-        </div>
-      )}
+      <div className="mb-4 shrink-0">
+        <p className="font-bold mb-2 text-[var(--text)] opacity-70 text-sm">ルーム番号（数字）</p>
+        <input
+          type="text"
+          inputMode="numeric"
+          className="w-full border-[3px] border-[var(--text)] rounded-xl p-4 font-black text-2xl tracking-widest text-center outline-none focus:border-[var(--secondary)] bg-[var(--bg)]"
+          placeholder="123456"
+          value={roomId}
+          onChange={(e) => setRoomId(e.target.value.replace(/[^0-9]/g, ''))}
+        />
+      </div>
 
       <div className="mb-6 shrink-0">
         <p className="font-bold mb-2 text-[var(--text)] opacity-70 text-sm">あなたの名前</p>
@@ -1988,7 +1998,7 @@ const SingleConfigView = ({ setView, setState, configMode }) => {
 };
 
 // --- ゲーム画面 ---
-const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
+const GameView = ({ state, setState, setView, stats, setStats, peerState, setPeerState }) => {
   const [score, setScore] = useState(0); const [combo, setCombo] = useState(0); const [maxCombo, setMaxCombo] = useState(0); const [qIndex, setQIndex] = useState(0); const [ans, setAns] = useState('');
   const [correctCount, setCorrectCount] = useState(0);
   const [startTime] = useState(Date.now()); const [currentTime, setCurrentTime] = useState(Date.now());
@@ -2009,12 +2019,20 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
     updateTime(); return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
-  // スコアの定期送信（クライアントのみ）
+  // スコアの定期送信
   useEffect(() => {
     if (peerState && peerState.role === 'client' && peerState.conn) {
       peerState.conn.send({ type: 'score_update', data: { score, combo } });
+    } else if (peerState && peerState.role === 'host' && setPeerState) {
+      // ホストのスコアを参加者リストに反映し、全クライアントにブロードキャスト
+      setPeerState(p => {
+        if (!p.hostId || !p.participants[p.hostId]) return p;
+        const newP = { ...p, participants: { ...p.participants, [p.hostId]: { ...p.participants[p.hostId], score, combo } } };
+        newP.connections.forEach(c => c.send({ type: 'participants_update', data: newP.participants }));
+        return newP;
+      });
     }
-  }, [score, combo, peerState]);
+  }, [score, combo, peerState?.role, setPeerState]);
 
   useEffect(() => { if (state.gameMode === 'SCORE_ATTACK' && remainSec <= 0) finishGame(); }, [remainSec, state.gameMode]);
 
@@ -2044,9 +2062,12 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
 
     setState(prev => ({ ...prev, finalScore: baseExp, finalCombo: maxComboRef.current, finalTime: exactElapsedSec, finalCorrect: correctCountRef.current, earnedExp: baseExp, previousExp: stats.totalExp, mistakes: mistakesRef.current }));
 
-    // ホストに終了通知
+    // 終了通知
     if (peerState && peerState.role === 'client' && peerState.conn) {
       peerState.conn.send({ type: 'game_finish', data: { finalScore: baseExp } });
+    } else if (peerState && peerState.role === 'host') {
+      // ホストが終了した場合、全クライアントにも終了を通知
+      peerState.connections.forEach(c => c.send({ type: 'game_finish' }));
     }
 
     setView('result');
@@ -2181,7 +2202,8 @@ const ResultView = ({ state, setView, peerState, leaveRoom }) => {
 
   const isMultiplayer = peerState && peerState.role;
   const participantsList = isMultiplayer ? Object.entries(peerState.participants || {}).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.score - a.score) : [];
-  const myRank = isMultiplayer && peerState.role === 'client' && peerState.peer ? participantsList.findIndex(p => p.id === peerState.peer.id) + 1 : null;
+  const myId = peerState.role === 'host' ? peerState.hostId : (peerState.peer ? peerState.peer.id : null);
+  const myRank = isMultiplayer && myId ? participantsList.findIndex(p => p.id === myId) + 1 : null;
   const top5 = participantsList.slice(0, 5);
 
   useEffect(() => {
@@ -2294,6 +2316,11 @@ const ResultView = ({ state, setView, peerState, leaveRoom }) => {
       <div className="mt-auto shrink-0 pt-4">
         {isMultiplayer ? (
           <div className="flex flex-col gap-3">
+            {peerState.role === 'host' && (
+              <MotionButton className="bg-[var(--secondary)] text-[var(--panel)] w-full py-4 text-xl border-[3px] border-[var(--text)]" onClick={() => setView('hostRoom')}>
+                <Users size={20} /> へやに戻ってもう一回あそぶ
+              </MotionButton>
+            )}
             {peerState.role === 'client' && (
               <div className="bg-[var(--accent)] border-[3px] border-[var(--text)] rounded-xl p-4 text-center font-bold text-[var(--text)]">
                 リーダーの画面がかわるまで待っていてね
@@ -2501,6 +2528,8 @@ export default function App() {
   // P2P通信用のステート
   const [urlHostId, setUrlHostId] = useState(null);
   const [peerState, setPeerState] = useState({ role: null, peer: null, conn: null, hostId: null, myName: '', connections: [], participants: {} });
+  const peerStateRef = useRef(peerState);
+  useEffect(() => { peerStateRef.current = peerState; }, [peerState]);
 
   // URLパラメータのチェック（児童がURLからアクセスした場合）
   useEffect(() => {
@@ -2538,6 +2567,7 @@ export default function App() {
           showToast('success', `${rawData.name} さんが参加しました`);
         } else if (rawData.type === 'score_update') {
           setPeerState(p => {
+            if (!p.participants[conn.peer]) return p;
             const newP = { ...p, participants: { ...p.participants, [conn.peer]: { ...p.participants[conn.peer], score: rawData.data.score, combo: rawData.data.combo } } };
             newP.connections.forEach(c => c.send({ type: 'participants_update', data: newP.participants }));
             return newP;
@@ -2546,12 +2576,16 @@ export default function App() {
       });
       conn.on('close', () => { setPeerState(p => ({ ...p, connections: p.connections.filter(c => c.peer !== conn.peer) })); });
     });
+
+    peer.on('error', (err) => {
+      showToast('error', '接続エラーが発生しました。もう一度お試しください。');
+    });
   };
 
-  // 【ホストからのブロードキャスト送信】
-  const broadcast = (data) => {
-    peerState.connections.forEach(conn => conn.send(data));
-  };
+  // 【ホストからのブロードキャスト送信】（refを使って最新のconnectionsを参照）
+  const broadcast = useCallback((data) => {
+    peerStateRef.current.connections.forEach(conn => conn.send(data));
+  }, []);
 
   // 【クライアント(児童)の初期化処理】
   const initClient = (playerName, hId) => {
@@ -2577,6 +2611,13 @@ export default function App() {
         }
       });
       conn.on('error', () => showToast('error', 'リーダーとの接続が切れました'));
+      conn.on('close', () => {
+        showToast('warning', 'リーダーとの接続が切れました');
+      });
+    });
+
+    peer.on('error', (err) => {
+      showToast('error', 'ルームが見つかりませんでした。番号を確認してください。');
     });
   };
 
@@ -2586,12 +2627,14 @@ export default function App() {
       peerState.peer.destroy();
     }
     setPeerState({ role: null, peer: null, conn: null, hostId: null, myName: '', connections: [], participants: {} });
+    setUrlHostId(null);
     setView('home');
     showToast('success', 'ルームから退出しました');
   };
 
   const handleHomeClick = () => {
     audioCtrl.playSE('click');
+    setUrlHostId(null);
     if (peerState.role) {
       leaveRoom();
     } else {
@@ -2657,11 +2700,11 @@ export default function App() {
           {view === 'singleConfig' && <PageWrapper key="single"><SingleConfigView setView={setView} setState={setState} configMode={configMode} /></PageWrapper>}
 
           {/* 追加ビュー */}
-          {view === 'hostRoom' && <PageWrapper key="host"><HostRoomView peerState={peerState} broadcast={broadcast} setView={setView} setState={setState} configMode={configMode} setConfigMode={setConfigMode} /></PageWrapper>}
+          {view === 'hostRoom' && <PageWrapper key="host"><HostRoomView peerState={peerState} setPeerState={setPeerState} broadcast={broadcast} setView={setView} setState={setState} configMode={configMode} setConfigMode={setConfigMode} /></PageWrapper>}
           {view === 'clientJoin' && <PageWrapper key="clientJoin"><ClientJoinView initClient={initClient} urlHostId={urlHostId} setView={setView} /></PageWrapper>}
           {view === 'clientWait' && <PageWrapper key="clientWait"><ClientWaitView peerState={peerState} leaveRoom={leaveRoom} /></PageWrapper>}
 
-          {view === 'game' && <PageWrapper key="game"><GameView state={state} setState={setState} setView={setView} stats={stats} setStats={setStats} peerState={peerState} /></PageWrapper>}
+          {view === 'game' && <PageWrapper key="game"><GameView state={state} setState={setState} setView={setView} stats={stats} setStats={setStats} peerState={peerState} setPeerState={setPeerState} /></PageWrapper>}
           {view === 'result' && <PageWrapper key="result"><ResultView state={state} setView={setView} peerState={peerState} leaveRoom={leaveRoom} /></PageWrapper>}
           {view === 'manager' && <PageWrapper key="manager"><ManagerView setView={setView} /></PageWrapper>}
           {view === 'import' && <PageWrapper key="import"><ImportView setView={setView} /></PageWrapper>}
