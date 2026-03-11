@@ -1,4 +1,4 @@
-# Qalclater
+# Qalc
 
 **小学生向け計算ゲーム学習アプリ** - みんなで楽しく算数を学ぼう！
 
@@ -6,7 +6,7 @@
 
 ## デモ
 
-https://gigayama.github.io/Qalclater/
+https://gigayama.github.io/Qalc/
 
 ## 特徴
 
