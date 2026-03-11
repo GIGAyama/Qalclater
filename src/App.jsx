@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Calculator, Trash2, PenTool, Home, Rocket, ChevronRight, 
-  Flame, Clock, Award, Settings, Plus, XCircle, Bot, Volume2, 
-  VolumeX, ArrowLeftRight, Share2, BarChart3, Trophy, User, 
-  Gamepad2, Swords, Timer, Download, HeartCrack, Coins, 
+import {
+  Calculator, Trash2, PenTool, Home, Rocket, ChevronRight,
+  Flame, Clock, Award, Settings, Plus, XCircle, Bot, Volume2,
+  VolumeX, ArrowLeftRight, Share2, BarChart3, Trophy, User,
+  Gamepad2, Swords, Timer, Download, HeartCrack, Coins,
   Store, CheckCircle2, PaintBucket, Shirt, Users, Radio,
   LayoutDashboard
 } from 'lucide-react';
@@ -16,7 +16,7 @@ class AudioController {
   constructor() { this.ctx = null; this.muted = true; this.bgmInterval = null; }
   init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); }
   toggle() { this.muted = !this.muted; if (!this.muted) { this.init(); this.playSE('click'); } else { this.stopBGM(); } return this.muted; }
-  
+
   vibrate(pattern) {
     if (!this.muted && typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(pattern);
@@ -27,22 +27,22 @@ class AudioController {
     if (this.muted || !this.ctx) return;
     const t = this.ctx.currentTime; const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
     osc.connect(gain); gain.connect(this.ctx.destination);
-    switch(type) {
-      case 'click': 
-        osc.type = 'square'; osc.frequency.setValueAtTime(600, t); gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05); osc.start(t); osc.stop(t + 0.05); 
+    switch (type) {
+      case 'click':
+        osc.type = 'square'; osc.frequency.setValueAtTime(600, t); gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05); osc.start(t); osc.stop(t + 0.05);
         this.vibrate(10); break;
-      case 'correct': 
-        osc.type = 'sine'; osc.frequency.setValueAtTime(880, t); osc.frequency.exponentialRampToValueAtTime(1760, t + 0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3); osc.start(t); osc.stop(t + 0.3); 
+      case 'correct':
+        osc.type = 'sine'; osc.frequency.setValueAtTime(880, t); osc.frequency.exponentialRampToValueAtTime(1760, t + 0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3); osc.start(t); osc.stop(t + 0.3);
         this.vibrate([20, 50, 20]); break;
-      case 'combo': 
-        osc.type = 'sine'; const freq = Math.min(880 + param * 55, 2000); osc.frequency.setValueAtTime(freq, t); gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2); osc.start(t); osc.stop(t + 0.2); if (param >= 5) { const osc2 = this.ctx.createOscillator(); osc2.connect(gain); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(freq * 1.5, t); osc2.start(t); osc2.stop(t + 0.2); } 
+      case 'combo':
+        osc.type = 'sine'; const freq = Math.min(880 + param * 55, 2000); osc.frequency.setValueAtTime(freq, t); gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2); osc.start(t); osc.stop(t + 0.2); if (param >= 5) { const osc2 = this.ctx.createOscillator(); osc2.connect(gain); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(freq * 1.5, t); osc2.start(t); osc2.stop(t + 0.2); }
         this.vibrate([30, 30, 40]); break;
-      case 'wrong': 
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.linearRampToValueAtTime(100, t + 0.3); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0.01, t + 0.3); osc.start(t); osc.stop(t + 0.3); 
+      case 'wrong':
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.linearRampToValueAtTime(100, t + 0.3); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0.01, t + 0.3); osc.start(t); osc.stop(t + 0.3);
         this.vibrate([100, 50, 100]); break;
-      case 'finish': 
+      case 'finish':
         osc.type = 'triangle'; osc.frequency.setValueAtTime(440, t); osc.frequency.setValueAtTime(554.37, t + 0.1); osc.frequency.setValueAtTime(659.25, t + 0.2); osc.frequency.setValueAtTime(880, t + 0.3); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0.001, t + 1.0); osc.start(t); osc.stop(t + 1.0); break;
-      case 'coin': 
+      case 'coin':
         osc.type = 'sine'; osc.frequency.setValueAtTime(1200, t); osc.frequency.setValueAtTime(1600, t + 0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0.01, t + 0.3); osc.start(t); osc.stop(t + 0.3); break;
     }
   }
@@ -81,85 +81,85 @@ const generateDynamicProblems = () => {
   const gcd = (x, y) => y === 0 ? x : gcd(y, x % y);
 
   const awasete10 = [];
-  for(let i=1; i<=9; i++) {
-    awasete10.push(`${i}+?=10|${10-i}`);
-    awasete10.push(`?+${i}=10|${10-i}`);
+  for (let i = 1; i <= 9; i++) {
+    awasete10.push(`${i}+?=10|${10 - i}`);
+    awasete10.push(`?+${i}=10|${10 - i}`);
   }
   problems["1年_あわせて10"] = awasete10;
 
   const kuriagari1 = [];
-  for(let a=2; a<=9; a++) {
-    for(let b=2; b<=9; b++) {
-      if(a+b >= 11 && a+b <= 18) kuriagari1.push(`${a}+${b}|${a+b}`);
+  for (let a = 2; a <= 9; a++) {
+    for (let b = 2; b <= 9; b++) {
+      if (a + b >= 11 && a + b <= 18) kuriagari1.push(`${a}+${b}|${a + b}`);
     }
   }
   problems["1年_くりあがり"] = kuriagari1;
 
   const hikizan1 = [];
-  for(let a=11; a<=18; a++) {
-    for(let b=2; b<=9; b++) {
-      if(a-b >= 2 && a-b <= 9) hikizan1.push(`${a}-${b}|${a-b}`);
+  for (let a = 11; a <= 18; a++) {
+    for (let b = 2; b <= 9; b++) {
+      if (a - b >= 2 && a - b <= 9) hikizan1.push(`${a}-${b}|${a - b}`);
     }
   }
   problems["1年_ひきざん"] = hikizan1;
 
   const kuku2 = [];
   const danNames = ["一", "二", "三", "四", "五", "六", "七", "八", "九"];
-  for(let a=1; a<=9; a++) {
+  for (let a = 1; a <= 9; a++) {
     const dan = [];
-    for(let b=1; b<=9; b++) {
-      dan.push(`${a}×${b}|${a*b}`);
-      kuku2.push(`${a}×${b}|${a*b}`);
+    for (let b = 1; b <= 9; b++) {
+      dan.push(`${a}×${b}|${a * b}`);
+      kuku2.push(`${a}×${b}|${a * b}`);
     }
-    problems[`2年_${danNames[a-1]}の段の九九`] = dan;
+    problems[`2年_${danNames[a - 1]}の段の九九`] = dan;
   }
   problems["2年_九九"] = kuku2;
 
   const kukuAna2 = [];
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=9; b++) {
-      kukuAna2.push(`${a}×?=${a*b}|${b}`);
-      kukuAna2.push(`?×${b}=${a*b}|${a}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) {
+      kukuAna2.push(`${a}×?=${a * b}|${b}`);
+      kukuAna2.push(`?×${b}=${a * b}|${a}`);
     }
   }
   problems["2年_九九あなうめ"] = kukuAna2;
 
   const nanju2 = [];
-  for(let a=10; a<=90; a+=10) {
-    for(let b=10; b<=90; b+=10) nanju2.push(`${a}+${b}|${a+b}`);
+  for (let a = 10; a <= 90; a += 10) {
+    for (let b = 10; b <= 90; b += 10) nanju2.push(`${a}+${b}|${a + b}`);
   }
-  for(let a=100; a<=180; a+=10) {
-    for(let b=10; b<=90; b+=10) {
-      if(a-b >= 10 && a-b <= 90) nanju2.push(`${a}-${b}|${a-b}`);
+  for (let a = 100; a <= 180; a += 10) {
+    for (let b = 10; b <= 90; b += 10) {
+      if (a - b >= 10 && a - b <= 90) nanju2.push(`${a}-${b}|${a - b}`);
     }
   }
   problems["2年_なん十の計算"] = nanju2;
 
   const wari3 = [];
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=9; b++) wari3.push(`${a*b}÷${a}|${b}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) wari3.push(`${a * b}÷${a}|${b}`);
   }
   problems["3年_わり算"] = wari3;
 
   const amari3 = [];
-  for(let a=2; a<=9; a++) {
-    for(let b=1; b<=9; b++) {
-      const base = a*b;
-      for(let r=1; r<a; r++) amari3.push(`${base+r}÷${a}のあまり|${r}`);
+  for (let a = 2; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) {
+      const base = a * b;
+      for (let r = 1; r < a; r++) amari3.push(`${base + r}÷${a}のあまり|${r}`);
     }
   }
   problems["3年_あまりは？"] = amari3;
 
   const nanjuKake3 = [];
-  for(let a=10; a<=90; a+=10) {
-    for(let b=1; b<=9; b++) nanjuKake3.push(`${a}×${b}|${a*b}`);
+  for (let a = 10; a <= 90; a += 10) {
+    for (let b = 1; b <= 9; b++) nanjuKake3.push(`${a}×${b}|${a * b}`);
   }
   problems["3年_何十のかけ算"] = nanjuKake3;
 
   const shosuTashi3 = [];
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=9; b++) {
-      let sum = (a+b)/10;
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) {
+      let sum = (a + b) / 10;
       let sumStr = Number.isInteger(sum) ? String(sum) : sum.toFixed(1);
       shosuTashi3.push(`0.${a}+0.${b}|${sumStr}`);
     }
@@ -167,28 +167,28 @@ const generateDynamicProblems = () => {
   problems["3年_小数たし算"] = shosuTashi3;
 
   const shosuHiki3 = [];
-  for(let a=2; a<=9; a++) {
-    for(let b=1; b<a; b++) shosuHiki3.push(`0.${a}-0.${b}|${((a-b)/10).toFixed(1)}`);
+  for (let a = 2; a <= 9; a++) {
+    for (let b = 1; b < a; b++) shosuHiki3.push(`0.${a}-0.${b}|${((a - b) / 10).toFixed(1)}`);
   }
-  for(let a=10; a<=18; a++) {
-    for(let b=1; b<=9; b++) {
-      if(a-b >= 1 && a-b <= 9) {
-        let aStr = (a/10).toFixed(1);
-        if(aStr.endsWith('.0')) aStr = String(a/10);
-        shosuHiki3.push(`${aStr}-0.${b}|${((a-b)/10).toFixed(1)}`);
+  for (let a = 10; a <= 18; a++) {
+    for (let b = 1; b <= 9; b++) {
+      if (a - b >= 1 && a - b <= 9) {
+        let aStr = (a / 10).toFixed(1);
+        if (aStr.endsWith('.0')) aStr = String(a / 10);
+        shosuHiki3.push(`${aStr}-0.${b}|${((a - b) / 10).toFixed(1)}`);
       }
     }
   }
   problems["3年_小数ひき算"] = shosuHiki3;
 
   const bunsuTashi3 = [];
-  for(let d=3; d<=9; d++) {
-    for(let a=1; a<d; a++) {
-      for(let b=1; b<d; b++) {
-        if(a+b <= d) {
-          let ans = (a+b) === d ? "1" : `${a+b}/${d}`;
-          let g = gcd(a+b, d);
-          if((a+b) !== d && g > 1) ans += `|${(a+b)/g}/${d/g}`;
+  for (let d = 3; d <= 9; d++) {
+    for (let a = 1; a < d; a++) {
+      for (let b = 1; b < d; b++) {
+        if (a + b <= d) {
+          let ans = (a + b) === d ? "1" : `${a + b}/${d}`;
+          let g = gcd(a + b, d);
+          if ((a + b) !== d && g > 1) ans += `|${(a + b) / g}/${d / g}`;
           bunsuTashi3.push(`${a}/${d}+${b}/${d}|${ans}`);
         }
       }
@@ -197,13 +197,13 @@ const generateDynamicProblems = () => {
   problems["3年_分数たし算"] = bunsuTashi3;
 
   const bunsuHiki3 = [];
-  for(let d=3; d<=9; d++) {
-    for(let a=2; a<=d; a++) {
-      for(let b=1; b<a; b++) {
+  for (let d = 3; d <= 9; d++) {
+    for (let a = 2; a <= d; a++) {
+      for (let b = 1; b < a; b++) {
         let aStr = a === d ? "1" : `${a}/${d}`;
-        let ans = `${a-b}/${d}`;
-        let g = gcd(a-b, d);
-        if(g > 1) ans += `|${(a-b)/g}/${d/g}`;
+        let ans = `${a - b}/${d}`;
+        let g = gcd(a - b, d);
+        if (g > 1) ans += `|${(a - b) / g}/${d / g}`;
         bunsuHiki3.push(`${aStr}-${b}/${d}|${ans}`);
       }
     }
@@ -211,78 +211,78 @@ const generateDynamicProblems = () => {
   problems["3年_分数ひき算"] = bunsuHiki3;
 
   const ikutsu = [];
-  for(let sum=2; sum<=10; sum++) {
-    for(let i=1; i<sum; i++) {
-      ikutsu.push(`${sum}は ${i}と いくつ？|${sum-i}`);
+  for (let sum = 2; sum <= 10; sum++) {
+    for (let i = 1; i < sum; i++) {
+      ikutsu.push(`${sum}は ${i}と いくつ？|${sum - i}`);
     }
   }
-  for(let a=1; a<=9; a++) {
-    for(let b=0; b<=9; b++) {
-      ikutsu.push(`10が ${a}こと 1が ${b}こ。あわせて いくつ？|${a*10+b}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 0; b <= 9; b++) {
+      ikutsu.push(`10が ${a}こと 1が ${b}こ。あわせて いくつ？|${a * 10 + b}`);
     }
   }
   problems["1年_ことば（いくつといくつ）"] = ikutsu;
 
   const junjo = [];
-  for(let i=1; i<=6; i++) {
-    for(let j=1; j<=6; j++) {
-      junjo.push(`まえから ${i}ばんめ。うしろに ${j}にん。ぜんぶで なんにん？|${i+j}`);
-      junjo.push(`ひだりから ${i}ばんめ。みぎから ${j}ばんめ。ぜんぶで なんにん？|${i+j-1}`);
+  for (let i = 1; i <= 6; i++) {
+    for (let j = 1; j <= 6; j++) {
+      junjo.push(`まえから ${i}ばんめ。うしろに ${j}にん。ぜんぶで なんにん？|${i + j}`);
+      junjo.push(`ひだりから ${i}ばんめ。みぎから ${j}ばんめ。ぜんぶで なんにん？|${i + j - 1}`);
     }
   }
-  for(let total=2; total<=16; total++) {
-    for(let i=1; i<total; i++) {
-      if(junjo.length >= 100) break;
-      junjo.push(`${total}にん ならんでいます。まえから ${i}ばんめの ひとの うしろには なんにん？|${total-i}`);
+  for (let total = 2; total <= 16; total++) {
+    for (let i = 1; i < total; i++) {
+      if (junjo.length >= 100) break;
+      junjo.push(`${total}にん ならんでいます。まえから ${i}ばんめの ひとの うしろには なんにん？|${total - i}`);
     }
   }
   problems["1年_ことば（じゅんじょ）"] = junjo.slice(0, 100);
 
   const tokei = [];
-  for(let h=1; h<=12; h++) {
+  for (let h = 1; h <= 12; h++) {
     tokei.push(`みじかい はりが ${h}。ながい はりが 12。なんじ？|${h}`);
-    tokei.push(`みじかい はりが ${h}と ${h%12+1}の あいだ。ながい はりが 6。なんじ はん？|${h}`);
-    tokei.push(`いま ${h}じ です。1じかん ごは なんじ？|${h%12+1}`);
-    tokei.push(`いま ${h}じ です。2じかん ごは なんじ？|${(h+1)%12+1}`);
+    tokei.push(`みじかい はりが ${h}と ${h % 12 + 1}の あいだ。ながい はりが 6。なんじ はん？|${h}`);
+    tokei.push(`いま ${h}じ です。1じかん ごは なんじ？|${h % 12 + 1}`);
+    tokei.push(`いま ${h}じ です。2じかん ごは なんじ？|${(h + 1) % 12 + 1}`);
   }
-  for(let m=1; m<=11; m++) {
-    tokei.push(`ながい はりが ${m}の とき。なんぷん？|${m*5}`);
-    tokei.push(`ながい はりが 12から ${m}まで うごきました。なんぷん たった？|${m*5}`);
+  for (let m = 1; m <= 11; m++) {
+    tokei.push(`ながい はりが ${m}の とき。なんぷん？|${m * 5}`);
+    tokei.push(`ながい はりが 12から ${m}まで うごきました。なんぷん たった？|${m * 5}`);
     tokei.push(`ながい はりが ${m}の ところから、1つ すすみました。なんぷん たった？|5`);
     tokei.push(`ながい はりが ${m}の ところから、2つ すすみました。なんぷん たった？|10`);
   }
-  for(let h=1; h<=8; h++) {
-    tokei.push(`いま ${h}じ です。3じかん ごは なんじ？|${h+3}`);
+  for (let h = 1; h <= 8; h++) {
+    tokei.push(`いま ${h}じ です。3じかん ごは なんじ？|${h + 3}`);
   }
   problems["1年_とけいクイズ"] = tokei.slice(0, 100);
 
   const chigai = [];
-  for(let a=1; a<=8; a++) {
-    for(let b=1; b<=8; b++) {
-      if(a !== b) chigai.push(`あか が ${a}こ、しろ が ${b}こ。ちがいは いくつ？|${Math.abs(a-b)}`);
+  for (let a = 1; a <= 8; a++) {
+    for (let b = 1; b <= 8; b++) {
+      if (a !== b) chigai.push(`あか が ${a}こ、しろ が ${b}こ。ちがいは いくつ？|${Math.abs(a - b)}`);
     }
   }
-  for(let a=1; a<=6; a++) {
-    for(let b=a+1; b<=10; b++) {
-      chigai.push(`${a}こ もっています。あと なこで ${b}こに なる？|${b-a}`);
+  for (let a = 1; a <= 6; a++) {
+    for (let b = a + 1; b <= 10; b++) {
+      chigai.push(`${a}こ もっています。あと なこで ${b}こに なる？|${b - a}`);
     }
   }
-  for(let a=5; a<=10; a++) {
-    for(let b=1; b<a; b++) {
-      chigai.push(`あめを ${a}こ もっています。${b}こ たべると のこりは？|${a-b}`);
+  for (let a = 5; a <= 10; a++) {
+    for (let b = 1; b < a; b++) {
+      chigai.push(`あめを ${a}こ もっています。${b}こ たべると のこりは？|${a - b}`);
     }
   }
-  for(let a=11; a<=15; a++) {
-    chigai.push(`あめを ${a}こ もっています。2こ たべると のこりは？|${a-2}`);
+  for (let a = 11; a <= 15; a++) {
+    chigai.push(`あめを ${a}こ もっています。2こ たべると のこりは？|${a - 2}`);
   }
   problems["1年_ことば（ちがい）"] = chigai.slice(0, 100);
 
   const mittsu = [];
-  for(let a=1; a<=4; a++) {
-    for(let b=1; b<=4; b++) {
-      for(let c=1; c<=4; c++) {
-        mittsu.push(`${a}にん いて、${b}にん きて、${c}にん きました。ぜんぶで なんにん？|${a+b+c}`);
-        mittsu.push(`${a+b}こ あって、${a}こ たべて、${c}こ もらいました。いま なこ？|${b+c}`);
+  for (let a = 1; a <= 4; a++) {
+    for (let b = 1; b <= 4; b++) {
+      for (let c = 1; c <= 4; c++) {
+        mittsu.push(`${a}にん いて、${b}にん きて、${c}にん きました。ぜんぶで なんにん？|${a + b + c}`);
+        mittsu.push(`${a + b}こ あって、${a}こ たべて、${c}こ もらいました。いま なこ？|${b + c}`);
       }
     }
   }
@@ -290,143 +290,143 @@ const generateDynamicProblems = () => {
 
   const awasete = [];
   const items_add = [
-    {a: "あかい くるま", b: "あおい くるま", unit: "だい", word: "あわせて なんだい？"},
-    {a: "おとこのこ", b: "おんなのこ", unit: "にん", word: "ぜんぶで なんにん？"},
-    {a: "いぬ", b: "ねこ", unit: "ひき", word: "あわせて なんびき？"},
-    {a: "りんご", b: "みかん", unit: "こ", word: "あわせて なこ？"},
-    {a: "あかい はな", b: "しろい はな", unit: "ほん", word: "ぜんぶで なんぼん？"}
+    { a: "あかい くるま", b: "あおい くるま", unit: "だい", word: "あわせて なんだい？" },
+    { a: "おとこのこ", b: "おんなのこ", unit: "にん", word: "ぜんぶで なんにん？" },
+    { a: "いぬ", b: "ねこ", unit: "ひき", word: "あわせて なんびき？" },
+    { a: "りんご", b: "みかん", unit: "こ", word: "あわせて なこ？" },
+    { a: "あかい はな", b: "しろい はな", unit: "ほん", word: "ぜんぶで なんぼん？" }
   ];
   const items_sub = [
-    {name: "クッキー", unit: "こ", action: "たべました。", word: "のこりは なこ？"},
-    {name: "えんぴつ", unit: "ほん", action: "ともだちに あげました。", word: "のこりは なんぼん？"},
-    {name: "あめ", unit: "こ", action: "たべました。", word: "のこりは なこ？"},
-    {name: "くるま", unit: "だい", action: "いなくなりました。", word: "のこりは なんだい？"},
-    {name: "とり", unit: "わ", action: "とんでいきました。", word: "のこりは なんわ？"}
+    { name: "クッキー", unit: "こ", action: "たべました。", word: "のこりは なこ？" },
+    { name: "えんぴつ", unit: "ほん", action: "ともだちに あげました。", word: "のこりは なんぼん？" },
+    { name: "あめ", unit: "こ", action: "たべました。", word: "のこりは なこ？" },
+    { name: "くるま", unit: "だい", action: "いなくなりました。", word: "のこりは なんだい？" },
+    { name: "とり", unit: "わ", action: "とんでいきました。", word: "のこりは なんわ？" }
   ];
 
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=9; b++) {
-      const itemAdd = items_add[(a+b) % items_add.length];
-      awasete.push(`${itemAdd.a}が ${a}${itemAdd.unit}、${itemAdd.b}が ${b}${itemAdd.unit}。${itemAdd.word}|${a+b}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) {
+      const itemAdd = items_add[(a + b) % items_add.length];
+      awasete.push(`${itemAdd.a}が ${a}${itemAdd.unit}、${itemAdd.b}が ${b}${itemAdd.unit}。${itemAdd.word}|${a + b}`);
     }
   }
-  for(let a=2; a<=18; a++) {
-    for(let b=1; b<a; b++) {
-      const itemSub = items_sub[(a+b) % items_sub.length];
-      awasete.push(`${itemSub.name}が ${a}${itemSub.unit} あります。${b}${itemSub.unit} ${itemSub.action} ${itemSub.word}|${a-b}`);
+  for (let a = 2; a <= 18; a++) {
+    for (let b = 1; b < a; b++) {
+      const itemSub = items_sub[(a + b) % items_sub.length];
+      awasete.push(`${itemSub.name}が ${a}${itemSub.unit} あります。${b}${itemSub.unit} ${itemSub.action} ${itemSub.word}|${a - b}`);
     }
   }
   problems["1年_ことば（あわせて・のこりは）"] = awasete.sort(() => Math.random() - 0.5).slice(0, 100);
 
   const tashizan10 = [];
-  for(let a=0; a<=10; a++) {
-    for(let b=0; b<=10-a; b++) {
-      tashizan10.push(`${a}+${b}|${a+b}`);
+  for (let a = 0; a <= 10; a++) {
+    for (let b = 0; b <= 10 - a; b++) {
+      tashizan10.push(`${a}+${b}|${a + b}`);
     }
   }
   problems["1年_たしざん（10まで）"] = tashizan10;
 
   const hikizan10 = [];
-  for(let a=0; a<=10; a++) {
-    for(let b=0; b<=a; b++) {
-      hikizan10.push(`${a}-${b}|${a-b}`);
+  for (let a = 0; a <= 10; a++) {
+    for (let b = 0; b <= a; b++) {
+      hikizan10.push(`${a}-${b}|${a - b}`);
     }
   }
   problems["1年_ひきざん（10まで）"] = hikizan10;
 
   const mittsu_calc = [];
-  for(let a=1; a<=8; a++) {
-    for(let b=1; b<=9-a; b++) {
-      for(let c=1; c<=10-a-b; c++) {
-        mittsu_calc.push(`${a}+${b}+${c}|${a+b+c}`);
+  for (let a = 1; a <= 8; a++) {
+    for (let b = 1; b <= 9 - a; b++) {
+      for (let c = 1; c <= 10 - a - b; c++) {
+        mittsu_calc.push(`${a}+${b}+${c}|${a + b + c}`);
       }
     }
   }
-  for(let a=3; a<=10; a++) {
-    for(let b=1; b<=a-2; b++) {
-      for(let c=1; c<=a-b-1; c++) {
-        mittsu_calc.push(`${a}-${b}-${c}|${a-b-c}`);
+  for (let a = 3; a <= 10; a++) {
+    for (let b = 1; b <= a - 2; b++) {
+      for (let c = 1; c <= a - b - 1; c++) {
+        mittsu_calc.push(`${a}-${b}-${c}|${a - b - c}`);
       }
     }
   }
-  for(let a=1; a<=8; a++) {
-    for(let b=1; b<=9-a; b++) {
-      for(let c=1; c<=a+b-1; c++) {
-        mittsu_calc.push(`${a}+${b}-${c}|${a+b-c}`);
+  for (let a = 1; a <= 8; a++) {
+    for (let b = 1; b <= 9 - a; b++) {
+      for (let c = 1; c <= a + b - 1; c++) {
+        mittsu_calc.push(`${a}+${b}-${c}|${a + b - c}`);
       }
     }
   }
-  for(let a=2; a<=10; a++) {
-    for(let b=1; b<=a-1; b++) {
-      for(let c=1; c<=10-(a-b); c++) {
-        mittsu_calc.push(`${a}-${b}+${c}|${a-b+c}`);
+  for (let a = 2; a <= 10; a++) {
+    for (let b = 1; b <= a - 1; b++) {
+      for (let c = 1; c <= 10 - (a - b); c++) {
+        mittsu_calc.push(`${a}-${b}+${c}|${a - b + c}`);
       }
     }
   }
   problems["1年_3つのかず"] = mittsu_calc;
 
   const tenAnd = [];
-  for(let a=1; a<=9; a++) {
-    tenAnd.push(`10+${a}|${10+a}`);
-    tenAnd.push(`${a}+10|${a+10}`);
+  for (let a = 1; a <= 9; a++) {
+    tenAnd.push(`10+${a}|${10 + a}`);
+    tenAnd.push(`${a}+10|${a + 10}`);
   }
   problems["1年_10と いくつ"] = tenAnd;
 
   const bigCalc = [];
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=9-a; b++) {
-      bigCalc.push(`${10+a}+${b}|${10+a+b}`);
-      bigCalc.push(`${b}+${10+a}|${10+a+b}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9 - a; b++) {
+      bigCalc.push(`${10 + a}+${b}|${10 + a + b}`);
+      bigCalc.push(`${b}+${10 + a}|${10 + a + b}`);
     }
   }
-  for(let a=2; a<=9; a++) {
-    for(let b=1; b<=a-1; b++) {
-      bigCalc.push(`${10+a}-${b}|${10+a-b}`);
+  for (let a = 2; a <= 9; a++) {
+    for (let b = 1; b <= a - 1; b++) {
+      bigCalc.push(`${10 + a}-${b}|${10 + a - b}`);
     }
   }
   problems["1年_おおきいかずの けいさん"] = bigCalc;
 
   const nanju100 = [];
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=10-a; b++) {
-      nanju100.push(`${a*10}+${b*10}|${(a+b)*10}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 10 - a; b++) {
+      nanju100.push(`${a * 10}+${b * 10}|${(a + b) * 10}`);
     }
   }
-  for(let a=2; a<=10; a++) {
-    for(let b=1; b<=a-1; b++) {
-      nanju100.push(`${a*10}-${b*10}|${(a-b)*10}`);
+  for (let a = 2; a <= 10; a++) {
+    for (let b = 1; b <= a - 1; b++) {
+      nanju100.push(`${a * 10}-${b * 10}|${(a - b) * 10}`);
     }
   }
   problems["1年_なん十の けいさん（100まで）"] = nanju100;
 
   const narabi = [];
-  for(let a=1; a<=97; a++) {
-    narabi.push(`${a}、${a+1}、${a+2}、つぎは？|${a+3}`);
+  for (let a = 1; a <= 97; a++) {
+    narabi.push(`${a}、${a + 1}、${a + 2}、つぎは？|${a + 3}`);
   }
-  for(let a=4; a<=100; a++) {
-    narabi.push(`${a}、${a-1}、${a-2}、つぎは？|${a-3}`);
+  for (let a = 4; a <= 100; a++) {
+    narabi.push(`${a}、${a - 1}、${a - 2}、つぎは？|${a - 3}`);
   }
-  for(let a=10; a<=70; a+=10) {
-    narabi.push(`${a}、${a+10}、${a+20}、つぎは？|${a+30}`);
+  for (let a = 10; a <= 70; a += 10) {
+    narabi.push(`${a}、${a + 10}、${a + 20}、つぎは？|${a + 30}`);
   }
-  for(let a=100; a>=40; a-=10) {
-    narabi.push(`${a}、${a-10}、${a-20}、つぎは？|${a-30}`);
+  for (let a = 100; a >= 40; a -= 10) {
+    narabi.push(`${a}、${a - 10}、${a - 20}、つぎは？|${a - 30}`);
   }
-  for(let a=2; a<=14; a+=2) {
-    narabi.push(`${a}、${a+2}、${a+4}、${a+6}、つぎは？|${a+8}`);
+  for (let a = 2; a <= 14; a += 2) {
+    narabi.push(`${a}、${a + 2}、${a + 4}、${a + 6}、つぎは？|${a + 8}`);
   }
-  for(let a=5; a<=35; a+=5) {
-    narabi.push(`${a}、${a+5}、${a+10}、つぎは？|${a+15}`);
+  for (let a = 5; a <= 35; a += 5) {
+    narabi.push(`${a}、${a + 5}、${a + 10}、つぎは？|${a + 15}`);
   }
   problems["1年_ことば（かずの ならび）"] = narabi.sort(() => Math.random() - 0.5).slice(0, 100);
 
   const okiichisai = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 100);
     let b = Math.floor(Math.random() * 100);
-    if(a === b) b = (b + 1) % 100;
-    okiichisai.push(`${a}と ${b}、おおきい ほうは？|${Math.max(a,b)}`);
-    okiichisai.push(`${a}と ${b}、ちいさい ほうは？|${Math.min(a,b)}`);
+    if (a === b) b = (b + 1) % 100;
+    okiichisai.push(`${a}と ${b}、おおきい ほうは？|${Math.max(a, b)}`);
+    okiichisai.push(`${a}と ${b}、ちいさい ほうは？|${Math.min(a, b)}`);
   }
   problems["1年_ことば（おおきい・ちいさい）"] = okiichisai;
 
@@ -443,44 +443,44 @@ const generateDynamicProblems = () => {
   problems["1年_ことば（かたちづくり）"] = katachi;
 
   const tashizan2keta = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 90) + 10;
-    let b = Math.floor(Math.random() * 89) + 1;
+    let b = Math.floor(Math.random() * 89) + 10;
     if (a + b > 99) { b = 99 - a; }
     if (b <= 0) b = 1;
-    tashizan2keta.push(`${a}+${b}|${a+b}`);
+    tashizan2keta.push(`${a}+${b}|${a + b}`);
   }
   problems["2年_2けたのたし算"] = tashizan2keta;
 
   const hikizan2keta = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 90) + 10;
-    let b = Math.floor(Math.random() * 89) + 1;
+    let b = Math.floor(Math.random() * 89) + 10;
     if (a <= b) { let tmp = a; a = b; b = tmp; }
     if (a === b) { a += 1; }
-    hikizan2keta.push(`${a}-${b}|${a-b}`);
+    hikizan2keta.push(`${a}-${b}|${a - b}`);
   }
   problems["2年_2けたのひき算"] = hikizan2keta;
 
   const bigCalc2 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     const type = Math.floor(Math.random() * 4);
-    if (type === 0) { 
+    if (type === 0) {
       let a = Math.floor(Math.random() * 9) + 1;
       let b = Math.floor(Math.random() * (10 - a)) + 1;
-      bigCalc2.push(`${a*100}+${b*100}|${(a+b)*100}`);
-    } else if (type === 1) { 
+      bigCalc2.push(`${a * 100}+${b * 100}|${(a + b) * 100}`);
+    } else if (type === 1) {
       let a = Math.floor(Math.random() * 9) + 2;
       let b = Math.floor(Math.random() * (a - 1)) + 1;
-      bigCalc2.push(`${a*1000}-${b*1000}|${(a-b)*100}`);
-    } else if (type === 2) { 
+      bigCalc2.push(`${a * 1000}-${b * 1000}|${(a - b) * 100}`);
+    } else if (type === 2) {
       let a = Math.floor(Math.random() * 9) + 1;
       let b = Math.floor(Math.random() * (10 - a)) + 1;
-      bigCalc2.push(`${a*1000}+${b*1000}|${(a+b)*1000}`);
-    } else { 
+      bigCalc2.push(`${a * 1000}+${b * 1000}|${(a + b) * 1000}`);
+    } else {
       let a = Math.floor(Math.random() * 9) + 2;
       let b = Math.floor(Math.random() * (a - 1)) + 1;
-      bigCalc2.push(`${a*1000}-${b*1000}|${(a-b)*1000}`);
+      bigCalc2.push(`${a * 1000}-${b * 1000}|${(a - b) * 1000}`);
     }
   }
   problems["2年_3けた・4けたの計算"] = bigCalc2;
@@ -494,14 +494,14 @@ const generateDynamicProblems = () => {
   problems["2年_ことば（たんい）"] = tani2;
 
   const okiichisai2 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 9900) + 100;
     let b = Math.floor(Math.random() * 9900) + 100;
-    if(a === b) b = (b + 1) % 10000;
+    if (a === b) b = (b + 1) % 10000;
     if (i % 2 === 0) {
-      okiichisai2.push(`${a}と ${b}、おおきい ほうは？|${Math.max(a,b)}`);
+      okiichisai2.push(`${a}と ${b}、おおきい ほうは？|${Math.max(a, b)}`);
     } else {
-      okiichisai2.push(`${a}と ${b}、ちいさい ほうは？|${Math.min(a,b)}`);
+      okiichisai2.push(`${a}と ${b}、ちいさい ほうは？|${Math.min(a, b)}`);
     }
   }
   problems["2年_ことば（おおきい・ちいさい）"] = okiichisai2;
@@ -536,145 +536,145 @@ const generateDynamicProblems = () => {
     { target: "にん", item: "ひき", verb: "つかまえました", q_item: "なんびき" }
   ];
 
-  for(let a=1; a<=9; a++) {
-    for(let b=1; b<=9; b++) {
-      if ((a+b) % 2 === 0) {
-        let t = kake_items[(a*b) % kake_items.length];
-        kakezanWord.push(`1${t.container}に ${a}${t.item} ${t.in}。${b}${t.container}では ぜんぶで ${t.q_item}？|${a*b}`);
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) {
+      if ((a + b) % 2 === 0) {
+        let t = kake_items[(a * b) % kake_items.length];
+        kakezanWord.push(`1${t.container}に ${a}${t.item} ${t.in}。${b}${t.container}では ぜんぶで ${t.q_item}？|${a * b}`);
       } else {
-        let p = kake_people[(a*b) % kake_people.length];
-        kakezanWord.push(`1${p.target}に ${a}${p.item}ずつ ${p.verb}。${b}${p.target}では ぜんぶで ${p.q_item}？|${a*b}`);
+        let p = kake_people[(a * b) % kake_people.length];
+        kakezanWord.push(`1${p.target}に ${a}${p.item}ずつ ${p.verb}。${b}${p.target}では ぜんぶで ${p.q_item}？|${a * b}`);
       }
     }
   }
   problems["2年_ことば（かけ算）"] = kakezanWord.sort(() => Math.random() - 0.5);
 
   const nagasaCalc = [];
-  for (let i=0; i<100; i++) {
-     let type = Math.floor(Math.random() * 2);
-     if (type === 0) {
-        let a = Math.floor(Math.random() * 50) + 1;
-        let b = Math.floor(Math.random() * 49) + 1;
-        nagasaCalc.push(`${a}cmの テープと ${b}cmの テープを つなぐと なんcm？|${a+b}`);
-     } else {
-        let a = Math.floor(Math.random() * 50) + 20;
-        let b = Math.floor(Math.random() * 19) + 1;
-        nagasaCalc.push(`${a}cmの ひもから ${b}cm きりとると のこりは なんcm？|${a-b}`);
-     }
+  for (let i = 0; i < 100; i++) {
+    let type = Math.floor(Math.random() * 2);
+    if (type === 0) {
+      let a = Math.floor(Math.random() * 50) + 1;
+      let b = Math.floor(Math.random() * 49) + 1;
+      nagasaCalc.push(`${a}cmの テープと ${b}cmの テープを つなぐと なんcm？|${a + b}`);
+    } else {
+      let a = Math.floor(Math.random() * 50) + 20;
+      let b = Math.floor(Math.random() * 19) + 1;
+      nagasaCalc.push(`${a}cmの ひもから ${b}cm きりとると のこりは なんcm？|${a - b}`);
+    }
   }
   problems["2年_ことば（ながさの けいさん）"] = nagasaCalc;
 
   const kasaCalc = [];
-  for (let i=0; i<100; i++) {
-     let type = Math.floor(Math.random() * 2);
-     if (type === 0) {
-        let a = Math.floor(Math.random() * 9) + 1;
-        let b = Math.floor(Math.random() * 9) + 1;
-        kasaCalc.push(`${a}Lの 水と ${b}Lの 水を あわせると なんL？|${a+b}`);
-     } else {
-        let a = Math.floor(Math.random() * 10) + 5;
-        let b = Math.floor(Math.random() * 4) + 1;
-        kasaCalc.push(`${a}dLの ジュースから ${b}dL のむと のこりは なんdL？|${a-b}`);
-     }
+  for (let i = 0; i < 100; i++) {
+    let type = Math.floor(Math.random() * 2);
+    if (type === 0) {
+      let a = Math.floor(Math.random() * 9) + 1;
+      let b = Math.floor(Math.random() * 9) + 1;
+      kasaCalc.push(`${a}Lの 水と ${b}Lの 水を あわせると なんL？|${a + b}`);
+    } else {
+      let a = Math.floor(Math.random() * 10) + 5;
+      let b = Math.floor(Math.random() * 4) + 1;
+      kasaCalc.push(`${a}dLの ジュースから ${b}dL のむと のこりは なんdL？|${a - b}`);
+    }
   }
   problems["2年_ことば（かさの けいさん）"] = kasaCalc;
 
   const kakezan2x1 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 90) + 10;
     let b = Math.floor(Math.random() * 9) + 1;
-    kakezan2x1.push(`${a}×${b}|${a*b}`);
+    kakezan2x1.push(`${a}×${b}|${a * b}`);
   }
   problems["3年_かけ算（2けた×1けた）"] = kakezan2x1;
 
   const kakezan3x1 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 900) + 100;
     let b = Math.floor(Math.random() * 9) + 1;
-    kakezan3x1.push(`${a}×${b}|${a*b}`);
+    kakezan3x1.push(`${a}×${b}|${a * b}`);
   }
   problems["3年_かけ算（3けた×1けた）"] = kakezan3x1;
 
   const warizanBig = [];
-  for(let i=0; i<100; i++) {
-     let type = Math.floor(Math.random() * 2);
-     if (type === 0) { 
-       let b = Math.floor(Math.random() * 8) + 2; 
-       let sho = Math.floor(Math.random() * 9) + 1; 
-       let a = b * sho;
-       warizanBig.push(`${a*10}÷${b}|${sho*10}`);
-     } else { 
-       let b = Math.floor(Math.random() * 8) + 2; 
-       let sho = Math.floor(Math.random() * 20) + 10; 
-       let a = b * sho;
-       if (a < 100) {
-          warizanBig.push(`${a}÷${b}|${sho}`);
-       } else {
-          i--; 
-       }
-     }
+  for (let i = 0; i < 100; i++) {
+    let type = Math.floor(Math.random() * 2);
+    if (type === 0) {
+      let b = Math.floor(Math.random() * 8) + 2;
+      let sho = Math.floor(Math.random() * 9) + 1;
+      let a = b * sho;
+      warizanBig.push(`${a * 10}÷${b}|${sho * 10}`);
+    } else {
+      let b = Math.floor(Math.random() * 8) + 2;
+      let sho = Math.floor(Math.random() * 20) + 10;
+      let a = b * sho;
+      if (a < 100) {
+        warizanBig.push(`${a}÷${b}|${sho}`);
+      } else {
+        i--;
+      }
+    }
   }
   problems["3年_大きいわり算"] = warizanBig;
 
   const anzanTashi = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 90) + 10;
     let b = Math.floor(Math.random() * 90) + 10;
-    anzanTashi.push(`${a}+${b}|${a+b}`);
+    anzanTashi.push(`${a}+${b}|${a + b}`);
   }
   problems["3年_暗算（2けたのたし算）"] = anzanTashi;
 
   const anzanHiki = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let a = Math.floor(Math.random() * 90) + 10;
     let b = Math.floor(Math.random() * 90) + 10;
     if (a < b) { let tmp = a; a = b; b = tmp; }
     if (a === b) { a += 1; }
-    anzanHiki.push(`${a}-${b}|${a-b}`);
+    anzanHiki.push(`${a}-${b}|${a - b}`);
   }
   problems["3年_暗算（2けたのひき算）"] = anzanHiki;
 
   const bigCalc3 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let type = Math.floor(Math.random() * 4);
-    if (type === 0) { 
+    if (type === 0) {
       let a = Math.floor(Math.random() * 9) + 1;
       let b = Math.floor(Math.random() * 9) + 1;
-      bigCalc3.push(`${a*1000}+${b*1000}|${(a+b)*1000}`);
-    } else if (type === 1) { 
+      bigCalc3.push(`${a * 1000}+${b * 1000}|${(a + b) * 1000}`);
+    } else if (type === 1) {
       let a = Math.floor(Math.random() * 9) + 2;
       let b = Math.floor(Math.random() * (a - 1)) + 1;
-      bigCalc3.push(`${a*1000}-${b*1000}|${(a-b)*1000}`);
-    } else if (type === 2) { 
+      bigCalc3.push(`${a * 1000}-${b * 1000}|${(a - b) * 1000}`);
+    } else if (type === 2) {
       let a = Math.floor(Math.random() * 9) + 1;
       let b = Math.floor(Math.random() * 9) + 1;
-      bigCalc3.push(`${a}万+${b}万は なん万？|${a+b}`);
-    } else { 
+      bigCalc3.push(`${a}万+${b}万は なん万？|${a + b}`);
+    } else {
       let a = Math.floor(Math.random() * 9) + 2;
       let b = Math.floor(Math.random() * (a - 1)) + 1;
-      bigCalc3.push(`${a}万-${b}万は なん万？|${a-b}`);
+      bigCalc3.push(`${a}万-${b}万は なん万？|${a - b}`);
     }
   }
   problems["3年_大きい数の計算"] = bigCalc3;
 
   const jikan3 = [];
-  for (let i=1; i<=3; i++) {
-     jikan3.push(`${i}分は なん秒？|${i*60}`);
+  for (let i = 1; i <= 3; i++) {
+    jikan3.push(`${i}分は なん秒？|${i * 60}`);
   }
-  for (let i=1; i<=2; i++) {
-     for (let j=10; j<=50; j+=10) {
-        jikan3.push(`${i}分${j}秒は なん秒？|${i*60+j}`);
-     }
+  for (let i = 1; i <= 2; i++) {
+    for (let j = 10; j <= 50; j += 10) {
+      jikan3.push(`${i}分${j}秒は なん秒？|${i * 60 + j}`);
+    }
   }
-  for (let i=70; i<=110; i+=10) {
-     jikan3.push(`${i}秒は 1分なん秒？|${i-60}`);
+  for (let i = 70; i <= 110; i += 10) {
+    jikan3.push(`${i}秒は 1分なん秒？|${i - 60}`);
   }
   problems["3年_時間（秒と分）"] = jikan3;
 
   const warizanWord3 = [];
-  for(let i=0; i<100; i++) {
-    let a = Math.floor(Math.random() * 9) + 1; 
-    let b = Math.floor(Math.random() * 8) + 2; 
+  for (let i = 0; i < 100; i++) {
+    let a = Math.floor(Math.random() * 9) + 1;
+    let b = Math.floor(Math.random() * 8) + 2;
     let total = a * b;
     if (i % 2 === 0) {
       warizanWord3.push(`${total}この あめを ${b}にんで おなじ かずずつ わけると、1にんぶんは なんこ？|${a}`);
@@ -685,10 +685,10 @@ const generateDynamicProblems = () => {
   problems["3年_ことば（わり算）"] = warizanWord3;
 
   const amariWord3 = [];
-  for(let i=0; i<100; i++) {
-    let b = Math.floor(Math.random() * 5) + 3; 
-    let sho = Math.floor(Math.random() * 7) + 2; 
-    let amari = Math.floor(Math.random() * (b - 1)) + 1; 
+  for (let i = 0; i < 100; i++) {
+    let b = Math.floor(Math.random() * 5) + 3;
+    let sho = Math.floor(Math.random() * 7) + 2;
+    let amari = Math.floor(Math.random() * (b - 1)) + 1;
     let total = b * sho + amari;
     if (i % 2 === 0) {
       amariWord3.push(`${total}こ の ケーキを 1つの はこに ${b}こ ずつ いれます。ぜんぶ いれるには、はこは いくつ いる？|${sho + 1}`);
@@ -699,108 +699,108 @@ const generateDynamicProblems = () => {
   problems["3年_ことば（あまりのある わり算）"] = amariWord3;
 
   const enToKyu3 = [];
-  for(let i=1; i<=50; i++) {
-    enToKyu3.push(`はんけいが ${i}cmの えんが あります。ちょっけいは なんcm？|${i*2}`);
-    enToKyu3.push(`ちょっけいが ${i*2}cmの えんが あります。はんけいは なんcm？|${i}`);
+  for (let i = 1; i <= 50; i++) {
+    enToKyu3.push(`はんけいが ${i}cmの えんが あります。ちょっけいは なんcm？|${i * 2}`);
+    enToKyu3.push(`ちょっけいが ${i * 2}cmの えんが あります。はんけいは なんcm？|${i}`);
   }
   problems["3年_ことば（円と球）"] = enToKyu3;
 
   const tani3 = [];
-  for(let i=1; i<=9; i++) {
-    tani3.push(`${i}kmは なんm？|${i*1000}`);
-    tani3.push(`${i*1000}mは なんkm？|${i}`);
-    tani3.push(`${i}kgは なんg？|${i*1000}`);
-    tani3.push(`${i*1000}gは なんkg？|${i}`);
-    tani3.push(`${i}tは なんkg？|${i*1000}`);
-    tani3.push(`${i*1000}kgは なんt？|${i}`);
+  for (let i = 1; i <= 9; i++) {
+    tani3.push(`${i}kmは なんm？|${i * 1000}`);
+    tani3.push(`${i * 1000}mは なんkm？|${i}`);
+    tani3.push(`${i}kgは なんg？|${i * 1000}`);
+    tani3.push(`${i * 1000}gは なんkg？|${i}`);
+    tani3.push(`${i}tは なんkg？|${i * 1000}`);
+    tani3.push(`${i * 1000}kgは なんt？|${i}`);
   }
   problems["3年_ことば（長さと重さの たんい）"] = tani3;
 
   const warizan4_1 = [];
-  for(let i=0; i<100; i++) {
-      let b = Math.floor(Math.random() * 8) + 2; 
-      let ans = Math.floor(Math.random() * 190) + 10; 
-      let a = b * ans;
-      warizan4_1.push(`${a}÷${b}|${ans}`);
+  for (let i = 0; i < 100; i++) {
+    let b = Math.floor(Math.random() * 8) + 2;
+    let ans = Math.floor(Math.random() * 190) + 10;
+    let a = b * ans;
+    warizan4_1.push(`${a}÷${b}|${ans}`);
   }
   problems["4年_わり算（1けたでわる）"] = warizan4_1;
 
   const warizan4_2 = [];
-  for(let i=0; i<100; i++) {
-      let type = Math.floor(Math.random() * 2);
-      if (type === 0) { 
-          let b0 = Math.floor(Math.random() * 9) + 1; 
-          let ans = Math.floor(Math.random() * 9) + 1; 
-          warizan4_2.push(`${b0 * ans * 10}÷${b0 * 10}|${ans}`);
-      } else { 
-          let b = Math.floor(Math.random() * 89) + 11; 
-          let ans = Math.floor(Math.random() * 9) + 2; 
-          let a = b * ans;
-          if (a < 1000) {
-              warizan4_2.push(`${a}÷${b}|${ans}`);
-          } else {
-              i--;
-          }
+  for (let i = 0; i < 100; i++) {
+    let type = Math.floor(Math.random() * 2);
+    if (type === 0) {
+      let b0 = Math.floor(Math.random() * 9) + 1;
+      let ans = Math.floor(Math.random() * 9) + 1;
+      warizan4_2.push(`${b0 * ans * 10}÷${b0 * 10}|${ans}`);
+    } else {
+      let b = Math.floor(Math.random() * 89) + 11;
+      let ans = Math.floor(Math.random() * 9) + 2;
+      let a = b * ans;
+      if (a < 1000) {
+        warizan4_2.push(`${a}÷${b}|${ans}`);
+      } else {
+        i--;
       }
+    }
   }
   problems["4年_わり算（2けたでわる）"] = warizan4_2;
 
   const shosuWari4 = [];
-  for(let i=0; i<100; i++) {
-      let b = Math.floor(Math.random() * 8) + 2; 
-      let ans = Math.floor(Math.random() * 99) + 1; 
-      if (ans % 10 === 0) ans += 1; 
-      let a = b * ans;
-      if (Math.random() < 0.5) {
-           shosuWari4.push(`${(a/10).toFixed(1)}÷${b}|${(ans/10).toFixed(1)}`);
-      } else {
-           shosuWari4.push(`${(a/100).toFixed(2)}÷${b}|${(ans/100).toFixed(2)}`);
-      }
+  for (let i = 0; i < 100; i++) {
+    let b = Math.floor(Math.random() * 8) + 2;
+    let ans = Math.floor(Math.random() * 99) + 1;
+    if (ans % 10 === 0) ans += 1;
+    let a = b * ans;
+    if (Math.random() < 0.5) {
+      shosuWari4.push(`${(a / 10).toFixed(1)}÷${b}|${(ans / 10).toFixed(1)}`);
+    } else {
+      shosuWari4.push(`${(a / 100).toFixed(2)}÷${b}|${(ans / 100).toFixed(2)}`);
+    }
   }
   problems["4年_小数÷整数"] = shosuWari4;
 
   const bunsuTashi4 = [];
-  for(let d=3; d<=9; d++) {
-      for(let a=1; a<=9; a++) {
-          for(let b=1; b<=9; b++) {
-              if (a + b > d && a + b <= 18) {
-                  let ansStr = (a+b)%d === 0 ? String((a+b)/d) : `${a+b}/${d}`;
-                  bunsuTashi4.push(`${a}/${d}+${b}/${d}|${ansStr}`);
-              }
-          }
+  for (let d = 3; d <= 9; d++) {
+    for (let a = 1; a <= 9; a++) {
+      for (let b = 1; b <= 9; b++) {
+        if (a + b > d && a + b <= 18) {
+          let ansStr = (a + b) % d === 0 ? String((a + b) / d) : `${a + b}/${d}`;
+          bunsuTashi4.push(`${a}/${d}+${b}/${d}|${ansStr}`);
+        }
       }
+    }
   }
   problems["4年_分数たし算（1より大きい）"] = bunsuTashi4;
 
   const bunsuHiki4 = [];
-  for(let d=3; d<=9; d++) {
-      for(let a=d+1; a<=18; a++) {
-          for(let b=1; b<a; b++) {
-              let ansStr = (a-b)%d === 0 ? String((a-b)/d) : `${a-b}/${d}`;
-              bunsuHiki4.push(`${a}/${d}-${b}/${d}|${ansStr}`);
-          }
+  for (let d = 3; d <= 9; d++) {
+    for (let a = d + 1; a <= 18; a++) {
+      for (let b = 1; b < a; b++) {
+        let ansStr = (a - b) % d === 0 ? String((a - b) / d) : `${a - b}/${d}`;
+        bunsuHiki4.push(`${a}/${d}-${b}/${d}|${ansStr}`);
       }
+    }
   }
   problems["4年_分数ひき算（1より大きい）"] = bunsuHiki4;
 
   const bigNum4 = [];
-  for(let i=0; i<100; i++) {
-      let type = Math.floor(Math.random() * 4);
-      let a = Math.floor(Math.random() * 90) + 10;
-      let b = Math.floor(Math.random() * 90) + 10;
-      if (type === 0) {
-          bigNum4.push(`${a}億+${b}億は なん億？|${a+b}`);
-      } else if (type === 1) {
-          if (a < b) { let tmp = a; a = b; b = tmp; }
-          if (a === b) a += 1;
-          bigNum4.push(`${a}億-${b}億は なん億？|${a-b}`);
-      } else if (type === 2) {
-          bigNum4.push(`${a}兆+${b}兆は なん兆？|${a+b}`);
-      } else {
-          if (a < b) { let tmp = a; a = b; b = tmp; }
-          if (a === b) a += 1;
-          bigNum4.push(`${a}兆-${b}兆は なん兆？|${a-b}`);
-      }
+  for (let i = 0; i < 100; i++) {
+    let type = Math.floor(Math.random() * 4);
+    let a = Math.floor(Math.random() * 90) + 10;
+    let b = Math.floor(Math.random() * 90) + 10;
+    if (type === 0) {
+      bigNum4.push(`${a}億+${b}億は なん億？|${a + b}`);
+    } else if (type === 1) {
+      if (a < b) { let tmp = a; a = b; b = tmp; }
+      if (a === b) a += 1;
+      bigNum4.push(`${a}億-${b}億は なん億？|${a - b}`);
+    } else if (type === 2) {
+      bigNum4.push(`${a}兆+${b}兆は なん兆？|${a + b}`);
+    } else {
+      if (a < b) { let tmp = a; a = b; b = tmp; }
+      if (a === b) a += 1;
+      bigNum4.push(`${a}兆-${b}兆は なん兆？|${a - b}`);
+    }
   }
   problems["4年_大きな数（億・兆）"] = bigNum4;
 
@@ -821,91 +821,91 @@ const generateDynamicProblems = () => {
   problems["4年_ことば（面積のたんい）"] = mensekiTani4;
 
   const mensekiCalc4 = [];
-  for(let i=0; i<100; i++) {
-      if (Math.random() < 0.3) {
-          let a = Math.floor(Math.random() * 20) + 2;
-          mensekiCalc4.push(`1辺が ${a}cmの 正方形の 面積は なん㎠？|${a*a}`);
-      } else {
-          let a = Math.floor(Math.random() * 20) + 2;
-          let b = Math.floor(Math.random() * 20) + 2;
-          if (a === b) b += 1;
-          mensekiCalc4.push(`たてが ${a}cm、よこが ${b}cmの 長方形の 面積は なん㎠？|${a*b}`);
-      }
+  for (let i = 0; i < 100; i++) {
+    if (Math.random() < 0.3) {
+      let a = Math.floor(Math.random() * 20) + 2;
+      mensekiCalc4.push(`1辺が ${a}cmの 正方形の 面積は なん㎠？|${a * a}`);
+    } else {
+      let a = Math.floor(Math.random() * 20) + 2;
+      let b = Math.floor(Math.random() * 20) + 2;
+      if (a === b) b += 1;
+      mensekiCalc4.push(`たてが ${a}cm、よこが ${b}cmの 長方形の 面積は なん㎠？|${a * b}`);
+    }
   }
   problems["4年_ことば（面積のけいさん）"] = mensekiCalc4;
 
   const shosuShikumi4 = [];
-  for(let i=0; i<100; i++) {
-      let a = Math.floor(Math.random() * 9) + 1; 
-      let b = Math.floor(Math.random() * 9) + 1; 
-      let c = Math.floor(Math.random() * 9) + 1; 
-      if (Math.random() < 0.5) {
-          shosuShikumi4.push(`1を ${a}こ、0.1を ${b}こ あわせた 数は？|${a}.${b}`);
-      } else {
-          shosuShikumi4.push(`1を ${a}こ、0.1を ${b}こ、0.01を ${c}こ あわせた 数は？|${a}.${b}${c}`);
-      }
+  for (let i = 0; i < 100; i++) {
+    let a = Math.floor(Math.random() * 9) + 1;
+    let b = Math.floor(Math.random() * 9) + 1;
+    let c = Math.floor(Math.random() * 9) + 1;
+    if (Math.random() < 0.5) {
+      shosuShikumi4.push(`1を ${a}こ、0.1を ${b}こ あわせた 数は？|${a}.${b}`);
+    } else {
+      shosuShikumi4.push(`1を ${a}こ、0.1を ${b}こ、0.01を ${c}こ あわせた 数は？|${a}.${b}${c}`);
+    }
   }
   problems["4年_ことば（小数のしくみ）"] = shosuShikumi4;
 
   const shosu10_100 = [];
-  for(let i=0; i<100; i++) {
-     let num = Math.floor(Math.random() * 999) + 1; 
-     let shift = Math.floor(Math.random() * 3); 
-     let baseVal = num / Math.pow(10, shift);
-     let op = Math.floor(Math.random() * 4); 
-     
-     let ansVal;
-     if (op === 0) ansVal = baseVal * 10;
-     else if (op === 1) ansVal = baseVal * 100;
-     else if (op === 2) ansVal = baseVal / 10;
-     else ansVal = baseVal / 100;
-     
-     let baseStr = parseFloat(baseVal.toPrecision(10)).toString();
-     let ansStr = parseFloat(ansVal.toPrecision(10)).toString();
-     
-     let opStr = ['× 10', '× 100', '÷ 10', '÷ 100'][op];
-     shosu10_100.push(`${baseStr} ${opStr}|${ansStr}`);
+  for (let i = 0; i < 100; i++) {
+    let num = Math.floor(Math.random() * 999) + 1;
+    let shift = Math.floor(Math.random() * 3);
+    let baseVal = num / Math.pow(10, shift);
+    let op = Math.floor(Math.random() * 4);
+
+    let ansVal;
+    if (op === 0) ansVal = baseVal * 10;
+    else if (op === 1) ansVal = baseVal * 100;
+    else if (op === 2) ansVal = baseVal / 10;
+    else ansVal = baseVal / 100;
+
+    let baseStr = parseFloat(baseVal.toPrecision(10)).toString();
+    let ansStr = parseFloat(ansVal.toPrecision(10)).toString();
+
+    let opStr = ['× 10', '× 100', '÷ 10', '÷ 100'][op];
+    shosu10_100.push(`${baseStr} ${opStr}|${ansStr}`);
   }
   problems["5年_小数と10・100の計算"] = shosu10_100;
 
   const yakubun = [];
-  for(let d=4; d<=50; d++) {
-     for(let n=2; n<d; n++) {
-         let g = gcd(n, d);
-         if (g > 1) { yakubun.push(`${n}/${d}を 約分すると？|${n/g}/${d/g}`); }
-     }
+  for (let d = 4; d <= 50; d++) {
+    for (let n = 2; n < d; n++) {
+      let g = gcd(n, d);
+      if (g > 1) { yakubun.push(`${n}/${d}を 約分すると？|${n / g}/${d / g}`); }
+    }
   }
   problems["5年_約分"] = yakubun.sort(() => Math.random() - 0.5).slice(0, 100);
 
   const piCalc = [];
-  for(let i=1; i<=20; i++) {
-      let ans = parseFloat((i * 3.14).toPrecision(10)).toString();
-      piCalc.push(`${i}×3.14|${ans}`);
-      if(i <= 9) piCalc.push(`3.14×${i}|${ans}`); 
+  for (let i = 1; i <= 20; i++) {
+    let ans = parseFloat((i * 3.14).toPrecision(10)).toString();
+    piCalc.push(`${i}×3.14|${ans}`);
+    if (i <= 9) piCalc.push(`3.14×${i}|${ans}`);
   }
-  for(let i=30; i<=90; i+=10) {
-      let ans = parseFloat((i * 3.14).toPrecision(10)).toString();
-      piCalc.push(`${i}×3.14|${ans}`);
+  for (let i = 30; i <= 90; i += 10) {
+    let ans = parseFloat((i * 3.14).toPrecision(10)).toString();
+    piCalc.push(`${i}×3.14|${ans}`);
   }
-  for(let i=0.5; i<=9.5; i+=1) {
-      let ans = parseFloat((i * 3.14).toPrecision(10)).toString();
-      piCalc.push(`${i}×3.14|${ans}`);
+  for (let i = 0.5; i <= 9.5; i += 1) {
+    let ans = parseFloat((i * 3.14).toPrecision(10)).toString();
+    piCalc.push(`${i}×3.14|${ans}`);
   }
   problems["5年_3.14のけいさん"] = piCalc;
 
   const koubaisuu = [];
-  for(let a=2; a<=12; a++) {
-     for(let b=a+1; b<=15; b++) {
-        let g = gcd(a,b);
-        let lcm = (a*b)/g;
-        if (lcm <= 60) { koubaisuu.push(`${a}と${b}の 最小公倍数は？|${lcm}`); }
-     }
+  for (let a = 2; a <= 12; a++) {
+    for (let b = a + 1; b <= 15; b++) {
+      let g = gcd(a, b);
+      let lcm = (a * b) / g;
+      if (lcm <= 60) { koubaisuu.push(`${a}と${b}の 最小公倍数は？|${lcm}`); }
+    }
   }
-  for(let a=4; a<=50; a++) {
-     for(let b=a+1; b<=60; b++) {
-        let g = gcd(a,b);
-        if (g > 2 && g !== a) { koubaisuu.push(`${a}と${b}の 最大公約数は？|${g}`); }
-     }
+  for (let a = 4; a <= 50; a++) {
+    for (let b = a + 1; b <= 60; b++) {
+      let g = gcd(a, b);
+      if (g > 2 && g !== a) { koubaisuu.push(`${a}と${b}の 最大公約数は？|${g}`); }
+    }
   }
   problems["5年_公倍数・公約数"] = koubaisuu.sort(() => Math.random() - 0.5).slice(0, 100);
 
@@ -917,87 +917,87 @@ const generateDynamicProblems = () => {
   problems["5年_ことば（図形の角）"] = kaku5;
 
   const percent5 = [];
-  for(let i=1; i<=99; i++) {
-    let dec = (i/100).toFixed(2);
-    if (i%10 === 0) dec = (i/100).toFixed(1);
+  for (let i = 1; i <= 99; i++) {
+    let dec = (i / 100).toFixed(2);
+    if (i % 10 === 0) dec = (i / 100).toFixed(1);
     percent5.push(`割合の ${dec} を 百分率(%)で こたえると なん%？|${i}`);
   }
   percent5.push("割合の 1 を 百分率(%)で こたえると なん%？|100");
   problems["5年_ことば（百分率）"] = percent5;
 
   const taiseki5 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     if (Math.random() < 0.3) {
-      let a = Math.floor(Math.random() * 9) + 2; 
-      taiseki5.push(`1辺が ${a}cmの 立方体の 体積は なん㎤？|${a*a*a}`);
+      let a = Math.floor(Math.random() * 9) + 2;
+      taiseki5.push(`1辺が ${a}cmの 立方体の 体積は なん㎤？|${a * a * a}`);
     } else {
       let a = Math.floor(Math.random() * 9) + 2;
       let b = Math.floor(Math.random() * 9) + 2;
       let c = Math.floor(Math.random() * 9) + 2;
-      taiseki5.push(`たて ${a}cm、よこ ${b}cm、高さ ${c}cmの 直方体の 体積は なん㎤？|${a*b*c}`);
+      taiseki5.push(`たて ${a}cm、よこ ${b}cm、高さ ${c}cmの 直方体の 体積は なん㎤？|${a * b * c}`);
     }
   }
   problems["5年_ことば（体積のけいさん）"] = taiseki5;
 
   const menseki5 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     if (Math.random() < 0.5) {
-       let b = Math.floor(Math.random() * 19) + 2; 
-       let h = Math.floor(Math.random() * 19) + 2; 
-       menseki5.push(`底辺 ${b}cm、高さ ${h}cmの 平行四辺形の 面積は なん㎠？|${b*h}`);
+      let b = Math.floor(Math.random() * 19) + 2;
+      let h = Math.floor(Math.random() * 19) + 2;
+      menseki5.push(`底辺 ${b}cm、高さ ${h}cmの 平行四辺形の 面積は なん㎠？|${b * h}`);
     } else {
-       let b = Math.floor(Math.random() * 19) + 2; 
-       let h = Math.floor(Math.random() * 19) + 2; 
-       if ((b * h) % 2 !== 0) b += 1; 
-       menseki5.push(`底辺 ${b}cm、高さ ${h}cmの 三角形の 面積は なん㎠？|${(b*h)/2}`);
+      let b = Math.floor(Math.random() * 19) + 2;
+      let h = Math.floor(Math.random() * 19) + 2;
+      if ((b * h) % 2 !== 0) b += 1;
+      menseki5.push(`底辺 ${b}cm、高さ ${h}cmの 三角形の 面積は なん㎠？|${(b * h) / 2}`);
     }
   }
   problems["5年_ことば（図形の面積）"] = menseki5;
 
   const heikin5 = [];
-  for(let i=0; i<100; i++) {
-     let a = Math.floor(Math.random() * 40) + 10;
-     let b = Math.floor(Math.random() * 40) + 10;
-     let c = Math.floor(Math.random() * 40) + 10;
-     let sum = a + b + c;
-     let rem = sum % 3;
-     if (rem !== 0) { c += (3 - rem); }
-     heikin5.push(`${a} と ${b} と ${c} の 平均は？|${(a+b+c)/3}`);
+  for (let i = 0; i < 100; i++) {
+    let a = Math.floor(Math.random() * 40) + 10;
+    let b = Math.floor(Math.random() * 40) + 10;
+    let c = Math.floor(Math.random() * 40) + 10;
+    let sum = a + b + c;
+    let rem = sum % 3;
+    if (rem !== 0) { c += (3 - rem); }
+    heikin5.push(`${a} と ${b} と ${c} の 平均は？|${(a + b + c) / 3}`);
   }
   problems["5年_ことば（平均）"] = heikin5;
 
   const enCalc6 = [];
-  for(let r=1; r<=10; r++) {
-     let d = r * 2;
-     let ensyu = parseFloat((d * 3.14).toPrecision(10)).toString();
-     enCalc6.push(`半径 ${r}cm の 円周は なんcm？|${ensyu}`);
-     enCalc6.push(`直径 ${d}cm の 円周は なんcm？|${ensyu}`);
-     let menseki = parseFloat((r * r * 3.14).toPrecision(10)).toString();
-     enCalc6.push(`半径 ${r}cm の 円の面積は なん㎠？|${menseki}`);
+  for (let r = 1; r <= 10; r++) {
+    let d = r * 2;
+    let ensyu = parseFloat((d * 3.14).toPrecision(10)).toString();
+    enCalc6.push(`半径 ${r}cm の 円周は なんcm？|${ensyu}`);
+    enCalc6.push(`直径 ${d}cm の 円周は なんcm？|${ensyu}`);
+    let menseki = parseFloat((r * r * 3.14).toPrecision(10)).toString();
+    enCalc6.push(`半径 ${r}cm の 円の面積は なん㎠？|${menseki}`);
   }
   problems["6年_円の計算"] = enCalc6;
 
   const hiCalc6 = [];
-  for(let a=1; a<=9; a++) {
-     for(let b=1; b<=9; b++) {
-        if(a !== b && a%b !== 0 && b%a !== 0) { 
-           let g = gcd(a, b);
-           let a1 = a/g; let b1 = b/g;
-           hiCalc6.push(`${a}:${b} の 比の値は？|${a1}/${b1}`);
-        } else if (a%b === 0) {
-           hiCalc6.push(`${a}:${b} の 比の値は？|${a/b}`);
-        }
-     }
+  for (let a = 1; a <= 9; a++) {
+    for (let b = 1; b <= 9; b++) {
+      if (a !== b && a % b !== 0 && b % a !== 0) {
+        let g = gcd(a, b);
+        let a1 = a / g; let b1 = b / g;
+        hiCalc6.push(`${a}:${b} の 比の値は？|${a1}/${b1}`);
+      } else if (a % b === 0) {
+        hiCalc6.push(`${a}:${b} の 比の値は？|${a / b}`);
+      }
+    }
   }
-  for(let a=1; a<=5; a++) {
-     for(let b=1; b<=5; b++) {
-        for(let k=2; k<=5; k++) {
-           if(a!==b) {
-               hiCalc6.push(`${a}:${b} = ${a*k}:?|${b*k}`);
-               hiCalc6.push(`${a}:${b} = ?:${b*k}|${a*k}`);
-           }
+  for (let a = 1; a <= 5; a++) {
+    for (let b = 1; b <= 5; b++) {
+      for (let k = 2; k <= 5; k++) {
+        if (a !== b) {
+          hiCalc6.push(`${a}:${b} = ${a * k}:?|${b * k}`);
+          hiCalc6.push(`${a}:${b} = ?:${b * k}|${a * k}`);
         }
-     }
+      }
+    }
   }
   problems["6年_比のけいさん"] = hiCalc6.sort(() => Math.random() - 0.5).slice(0, 100);
 
@@ -1020,52 +1020,52 @@ const generateDynamicProblems = () => {
   problems["6年_ことば（対称な図形）"] = taisho6;
 
   const kakushuku6 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     if (Math.random() < 0.5) {
       let a = Math.floor(Math.random() * 20) + 2;
       let k = Math.floor(Math.random() * 4) + 2;
-      kakushuku6.push(`長さ ${a}cm の ${k}倍の 拡大図の 長さは なんcm？|${a*k}`);
+      kakushuku6.push(`長さ ${a}cm の ${k}倍の 拡大図の 長さは なんcm？|${a * k}`);
     } else {
       let a = Math.floor(Math.random() * 10) + 2;
-      let k_hundreds = Math.floor(Math.random() * 10) + 1; 
+      let k_hundreds = Math.floor(Math.random() * 10) + 1;
       let k = k_hundreds * 100;
-      kakushuku6.push(`${k}分の1 の 縮図で ${a}cm の 長さは、実際には なんm？|${(a*k)/100}`);
+      kakushuku6.push(`${k}分の1 の 縮図で ${a}cm の 長さは、実際には なんm？|${(a * k) / 100}`);
     }
   }
   problems["6年_ことば（拡大図と縮図）"] = kakushuku6;
 
   const rittai6 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     let s = Math.floor(Math.random() * 50) + 10;
     let h = Math.floor(Math.random() * 20) + 2;
     if (Math.random() < 0.5) {
-      rittai6.push(`底面積が ${s}㎠、高さが ${h}cm の 角柱の 体積は なん㎤？|${s*h}`);
+      rittai6.push(`底面積が ${s}㎠、高さが ${h}cm の 角柱の 体積は なん㎤？|${s * h}`);
     } else {
-      rittai6.push(`底面積が ${s}㎠、高さが ${h}cm の 円柱の 体積は なん㎤？|${s*h}`);
+      rittai6.push(`底面積が ${s}㎠、高さが ${h}cm の 円柱の 体積は なん㎤？|${s * h}`);
     }
   }
   problems["6年_ことば（立体の体積）"] = rittai6;
 
   const daihyo6 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     if (Math.random() < 0.5) {
       let start = Math.floor(Math.random() * 10) + 1;
-      let arr = [start, start + Math.floor(Math.random()*3), start + Math.floor(Math.random()*5)+2, start + Math.floor(Math.random()*8)+5, start + Math.floor(Math.random()*10)+8];
-      arr.sort((a,b) => a-b);
+      let arr = [start, start + Math.floor(Math.random() * 3), start + Math.floor(Math.random() * 5) + 2, start + Math.floor(Math.random() * 8) + 5, start + Math.floor(Math.random() * 10) + 8];
+      arr.sort((a, b) => a - b);
       daihyo6.push(`${arr.join(', ')} の 中央値(メジアン)は？|${arr[2]}`);
     } else {
       let mode = Math.floor(Math.random() * 10) + 1;
       let other1 = mode + Math.floor(Math.random() * 5) + 1;
       let other2 = mode - Math.floor(Math.random() * 5) - 1;
       let arr = [mode, mode, mode, other1, other2];
-      arr.sort(() => Math.random() - 0.5); 
+      arr.sort(() => Math.random() - 0.5);
       daihyo6.push(`${arr.join(', ')} の 最頻値(モード)は？|${mode}`);
     }
   }
   problems["6年_ことば（データの代表値）"] = daihyo6;
 
   const hirei6 = [];
-  for(let i=0; i<100; i++) {
+  for (let i = 0; i < 100; i++) {
     if (Math.random() < 0.5) {
       let a = Math.floor(Math.random() * 9) + 2;
       let x1 = Math.floor(Math.random() * 5) + 2;
@@ -1077,7 +1077,7 @@ const generateDynamicProblems = () => {
       let x2 = Math.floor(Math.random() * 5) + 2;
       let a = x2 * y2;
       let divisors = [];
-      for(let d=2; d<=a; d++) {
+      for (let d = 2; d <= a; d++) {
         if (a % d === 0 && d !== x2) divisors.push(d);
       }
       if (divisors.length > 0) {
@@ -1099,21 +1099,21 @@ Object.assign(DEFAULT_PROBLEMS, generateDynamicProblems());
 const SHOP_ITEMS = {
   bases: [
     { id: 'b_dog', char: '🐶', name: 'イヌ', price: 0 }, { id: 'b_cat', char: '🐱', name: 'ネコ', price: 200 },
-    { id: 'b_frog', char: '🐸', name: 'カエル', price: 250 }, { id: 'b_bear', char: '🐻', name: 'クマ', price: 300 }, 
+    { id: 'b_frog', char: '🐸', name: 'カエル', price: 250 }, { id: 'b_bear', char: '🐻', name: 'クマ', price: 300 },
     { id: 'b_pig', char: '🐷', name: 'ブタ', price: 300 }, { id: 'b_monkey', char: '🐵', name: 'サル', price: 350 },
     { id: 'b_rabbit', char: '🐰', name: 'ウサギ', price: 350 }, { id: 'b_penguin', char: '🐧', name: 'ペンギン', price: 400 },
     { id: 'b_fox', char: '🦊', name: 'キツネ', price: 400 }, { id: 'b_koala', char: '🐨', name: 'コアラ', price: 450 },
-    { id: 'b_tiger', char: '🐯', name: 'トラ', price: 450 }, { id: 'b_panda', char: '🐼', name: 'パンダ', price: 500 }, 
-    { id: 'b_lion', char: '🦁', name: 'ライオン', price: 600 }, { id: 'b_ghost', char: '👻', name: 'オバケ', price: 700 }, 
-    { id: 'b_alien', char: '👽', name: 'うちゅうじん', price: 800 }, { id: 'b_robot', char: '🤖', name: 'ロボット', price: 900 }, 
+    { id: 'b_tiger', char: '🐯', name: 'トラ', price: 450 }, { id: 'b_panda', char: '🐼', name: 'パンダ', price: 500 },
+    { id: 'b_lion', char: '🦁', name: 'ライオン', price: 600 }, { id: 'b_ghost', char: '👻', name: 'オバケ', price: 700 },
+    { id: 'b_alien', char: '👽', name: 'うちゅうじん', price: 800 }, { id: 'b_robot', char: '🤖', name: 'ロボット', price: 900 },
     { id: 'b_dragon', char: '🐉', name: 'ドラゴン', price: 1000 }, { id: 'b_unicorn', char: '🦄', name: 'ユニコーン', price: 1500 },
   ],
   hats: [
-    { id: 'h_cap', char: '🧢', name: 'キャップ', price: 150 }, { id: 'h_ribbon', char: '🎀', name: 'リボン', price: 150 }, 
+    { id: 'h_cap', char: '🧢', name: 'キャップ', price: 150 }, { id: 'h_ribbon', char: '🎀', name: 'リボン', price: 150 },
     { id: 'h_straw', char: '👒', name: 'むぎわら', price: 150 }, { id: 'h_flower', char: '🌸', name: 'はなかざり', price: 150 },
-    { id: 'h_leaf', char: '🍃', name: 'はっぱ', price: 150 }, { id: 'h_helmet', char: '🪖', name: 'ヘルメット', price: 200 }, 
-    { id: 'h_mushroom', char: '🍄', name: 'キノコ', price: 250 }, { id: 'h_tophat', char: '🎩', name: 'シルクハット', price: 300 }, 
-    { id: 'h_graduate', char: '🎓', name: 'そつぎょう', price: 350 }, { id: 'h_crown', char: '👑', name: 'おうかん', price: 500 }, 
+    { id: 'h_leaf', char: '🍃', name: 'はっぱ', price: 150 }, { id: 'h_helmet', char: '🪖', name: 'ヘルメット', price: 200 },
+    { id: 'h_mushroom', char: '🍄', name: 'キノコ', price: 250 }, { id: 'h_tophat', char: '🎩', name: 'シルクハット', price: 300 },
+    { id: 'h_graduate', char: '🎓', name: 'そつぎょう', price: 350 }, { id: 'h_crown', char: '👑', name: 'おうかん', price: 500 },
     { id: 'h_halo', char: '😇', name: 'てんしのわ', price: 600 },
     { id: 'h_apple', char: '🍎', name: '頭のせリンゴ', price: 100 }, { id: 'h_mikan', char: '🍊', name: '頭のせみかん', price: 100 },
     { id: 'h_sprout', char: '🌱', name: 'ふたば', price: 150 }, { id: 'h_clover', char: '🍀', name: 'クローバー', price: 150 },
@@ -1126,9 +1126,9 @@ const SHOP_ITEMS = {
     { id: 'h_spider', char: '🕷️', name: 'クモ', price: 250 }, { id: 'h_ufo', char: '🛸', name: 'UFO', price: 400 },
   ],
   faces: [
-    { id: 'f_mask', char: '😷', name: 'マスク', price: 150 }, 
-    { id: 'f_glass', char: '🕶️', name: 'サングラス', price: 200 }, { id: 'f_nerd', char: '🥸', name: 'めがね', price: 200 }, 
-    { id: 'f_monocle', char: '🧐', name: 'モノクル', price: 250 }, 
+    { id: 'f_mask', char: '😷', name: 'マスク', price: 150 },
+    { id: 'f_glass', char: '🕶️', name: 'サングラス', price: 200 }, { id: 'f_nerd', char: '🥸', name: 'めがね', price: 200 },
+    { id: 'f_monocle', char: '🧐', name: 'モノクル', price: 250 },
     { id: 'f_star', char: '🤩', name: 'スター', price: 300 },
     { id: 'f_goggles', char: '🥽', name: 'ゴーグル', price: 200 }, { id: 'f_mask_theater', char: '🎭', name: 'かめん', price: 300 },
     { id: 'f_bandage', char: '🩹', name: 'ばんそうこう', price: 100 }, { id: 'f_tongue', char: '👅', name: 'あっかんべー', price: 150 },
@@ -1138,9 +1138,9 @@ const SHOP_ITEMS = {
     { id: 'f_diving', char: '🤿', name: 'ダイバー', price: 300 }, { id: 'f_eye', char: '👁️', name: 'ギョロめ', price: 200 },
   ],
   props: [
-    { id: 'p_apple', char: '🍎', name: 'リンゴ', price: 100 }, { id: 'p_pencil', char: '✏️', name: 'えんぴつ', price: 100 }, 
+    { id: 'p_apple', char: '🍎', name: 'リンゴ', price: 100 }, { id: 'p_pencil', char: '✏️', name: 'えんぴつ', price: 100 },
     { id: 'p_book', char: '📖', name: 'ほん', price: 150 }, { id: 'p_ball', char: '⚽', name: 'ボール', price: 150 },
-    { id: 'p_palette', char: '🎨', name: 'パレット', price: 250 }, { id: 'p_bag', char: '🎒', name: 'ランドセル', price: 250 }, 
+    { id: 'p_palette', char: '🎨', name: 'パレット', price: 250 }, { id: 'p_bag', char: '🎒', name: 'ランドセル', price: 250 },
     { id: 'p_wand', char: '🪄', name: 'ステッキ', price: 300 }, { id: 'p_mic', char: '🎤', name: 'マイク', price: 350 },
     { id: 'p_sword', char: '🗡️', name: 'けん', price: 400 }, { id: 'p_game', char: '🎮', name: 'ゲーム', price: 400 },
     { id: 'p_guitar', char: '🎸', name: 'ギター', price: 500 }, { id: 'p_pc', char: '💻', name: 'パソコン', price: 500 },
@@ -1211,28 +1211,28 @@ const MISSION_POOL = [
 const getRandomMissions = (count = 3, streak = 0) => {
   let pool = [...MISSION_POOL];
   const selected = [];
-  
+
   for (let i = 0; i < count; i++) {
     if (pool.length === 0) break;
     const weights = pool.map(m => {
-      const baseWeight = 1000 / m.reward; 
+      const baseWeight = 1000 / m.reward;
       const streakBonus = 1 + (m.reward / 100) * (streak * 0.05);
       return baseWeight * streakBonus;
     });
-    
+
     const totalWeight = weights.reduce((a, b) => a + b, 0);
     let r = Math.random() * totalWeight;
     let selectedIdx = pool.length - 1;
-    
+
     for (let j = 0; j < weights.length; j++) {
       r -= weights[j];
       if (r <= 0) { selectedIdx = j; break; }
     }
-    
+
     selected.push({ ...pool[selectedIdx], current: 0, claimed: false });
     pool.splice(selectedIdx, 1);
   }
-  
+
   return selected;
 };
 
@@ -1241,9 +1241,9 @@ const normalizeStr = (str) => {
 };
 
 const StorageAPI = {
-  safeGet: (key, fallback = null) => { try { const v = window.localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; } },
-  safeSet: (key, val) => { try { window.localStorage.setItem(key, JSON.stringify(val)); return true; } catch(e) { console.warn("Quota exceeded"); return false; } },
-  
+  safeGet: (key, fallback = null) => { try { const v = window.localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } },
+  safeSet: (key, val) => { try { window.localStorage.setItem(key, JSON.stringify(val)); return true; } catch (e) { console.warn("Quota exceeded"); return false; } },
+
   getStats: () => {
     let stats = StorageAPI.safeGet('qalc_stats');
     if (!stats || !stats.inventory) {
@@ -1267,7 +1267,7 @@ const StorageAPI = {
     return stats;
   },
   saveStats: (stats) => StorageAPI.safeSet('qalc_stats', stats),
-  
+
   updateDailyAndMissions: (stats, exp, combo, playCount, gameMode, correctCount) => {
     const today = new Date().toLocaleDateString();
     if (!stats.daily) stats.daily = {};
@@ -1275,7 +1275,7 @@ const StorageAPI = {
     stats.daily[today].exp += exp;
     stats.daily[today].count += playCount;
     stats.totalExp = (stats.totalExp || 0) + exp;
-    
+
     if (stats.lastDate !== today) {
       if (stats.lastDate) {
         const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
@@ -1289,7 +1289,7 @@ const StorageAPI = {
         if (m.type === 'play' && !m.claimed) m.current += playCount;
         if (m.type === 'combo' && !m.claimed && combo > m.current) m.current = combo;
         if (m.type === 'score' && !m.claimed && exp > m.current) m.current = exp;
-        
+
         if (m.type === 'play_score_attack' && gameMode === 'SCORE_ATTACK' && !m.claimed) m.current += playCount;
         if (m.type === 'play_time_attack' && gameMode === 'TIME_ATTACK' && !m.claimed) m.current += playCount;
         if (m.type === 'play_sudden_death' && gameMode === 'SUDDEN_DEATH' && !m.claimed) m.current += playCount;
@@ -1301,13 +1301,13 @@ const StorageAPI = {
 
   getMistakes: () => StorageAPI.safeGet('qalc_mistakes', []),
   addMistakes: (newMistakes) => {
-    if(newMistakes.length === 0) return;
+    if (newMistakes.length === 0) return;
     let mistakes = StorageAPI.getMistakes(); mistakes = [...newMistakes, ...mistakes];
     const unique = Array.from(new Map(mistakes.map(m => [m.q, m])).values()).slice(0, 50);
     StorageAPI.safeSet('qalc_mistakes', unique);
   },
   removeMistakes: (correctQs) => {
-    let mistakes = StorageAPI.getMistakes(); const correctSet = new Set(correctQs.map(q=>q.q));
+    let mistakes = StorageAPI.getMistakes(); const correctSet = new Set(correctQs.map(q => q.q));
     StorageAPI.safeSet('qalc_mistakes', mistakes.filter(m => !correctSet.has(m.q)));
   },
 
@@ -1326,8 +1326,8 @@ const StorageAPI = {
   getProblemsByGroup: (name) => StorageAPI.getRawData()[name] || [],
   saveProblemSet: (name, problems) => { const data = StorageAPI.getRawData(); data[name] = problems; return StorageAPI.safeSet('qalc_problems', data); },
   deleteProblemGroup: (name) => { const data = StorageAPI.getRawData(); delete data[name]; return StorageAPI.safeSet('qalc_problems', data); },
-  encodeCourse: (name, problems) => btoa(encodeURIComponent(JSON.stringify({n: name, p: problems.map(p => `${p.q},${p.a}`).join(';')}))),
-  decodeCourse: (code) => { try { const data = JSON.parse(decodeURIComponent(atob(code))); return { name: data.n, problems: data.p.split(';').map(str => { const [q, a] = str.split(','); return {q, a}; }) }; } catch(e) { return null; } }
+  encodeCourse: (name, problems) => btoa(encodeURIComponent(JSON.stringify({ n: name, p: problems.map(p => `${p.q},${p.a}`).join(';') }))),
+  decodeCourse: (code) => { try { const data = JSON.parse(decodeURIComponent(atob(code))); return { name: data.n, problems: data.p.split(';').map(str => { const [q, a] = str.split(','); return { q, a }; }) }; } catch (e) { return null; } }
 };
 
 // ==========================================
@@ -1384,8 +1384,8 @@ const getLevelInfo = (exp) => {
   return { level, title: rank.text, badge: rank.badge, color: rank.color, progress, nextLevelExp };
 };
 
-const LayeredAvatar = React.memo(({ equipped, size = "text-5xl", className="" }) => {
-  const getChar = (category, id) => { if(!id) return null; const item = SHOP_ITEMS[category].find(i => i.id === id); return item ? item.char : null; };
+const LayeredAvatar = React.memo(({ equipped, size = "text-5xl", className = "" }) => {
+  const getChar = (category, id) => { if (!id) return null; const item = SHOP_ITEMS[category].find(i => i.id === id); return item ? item.char : null; };
   return (
     <div className={`relative flex items-center justify-center aspect-square ${size} ${className}`}>
       <span className="absolute z-10 drop-shadow-sm">{getChar('bases', equipped.base) || '🐶'}</span>
@@ -1403,7 +1403,7 @@ const PageWrapper = ({ children, keyName }) => (
 );
 
 const MotionButton = ({ children, onClick, className, ...props }) => (
-  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95, y: 2, boxShadow: "none" }} onClick={() => { audioCtrl.playSE('click'); if(onClick) onClick(); }} className={`rounded-[20px] font-bold shadow-[0_4px_0_rgba(0,0,0,0.2)] border-none outline-none flex items-center justify-center gap-2 select-none touch-manipulation ${className}`} {...props}>
+  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95, y: 2, boxShadow: "none" }} onClick={() => { audioCtrl.playSE('click'); if (onClick) onClick(); }} className={`rounded-[20px] font-bold shadow-[0_4px_0_rgba(0,0,0,0.2)] border-none outline-none flex items-center justify-center gap-2 select-none touch-manipulation ${className}`} {...props}>
     {children}
   </motion.button>
 );
@@ -1429,8 +1429,8 @@ const MathText = React.memo(({ text }) => {
 // 手書きキャンバス
 const HandWritingCanvas = forwardRef((props, ref) => {
   const canvasRef = useRef(null); const isDrawing = useRef(false); const lastPos = useRef({ x: 0, y: 0 });
-  
-  useImperativeHandle(ref, () => ({ 
+
+  useImperativeHandle(ref, () => ({
     clear: () => { const cvs = canvasRef.current; if (cvs) cvs.getContext('2d').clearRect(0, 0, cvs.width, cvs.height); }
   }));
 
@@ -1438,7 +1438,7 @@ const HandWritingCanvas = forwardRef((props, ref) => {
     const cvs = canvasRef.current;
     if (!cvs) return;
     const ctx = cvs.getContext('2d');
-    
+
     const resize = () => {
       window.requestAnimationFrame(() => {
         if (!canvasRef.current || !canvasRef.current.parentElement) return;
@@ -1447,7 +1447,7 @@ const HandWritingCanvas = forwardRef((props, ref) => {
         if (Math.abs(currentCvs.width - newW) > 1 || Math.abs(currentCvs.height - newH) > 1) {
           const tempCanvas = document.createElement('canvas'); tempCanvas.width = currentCvs.width || newW; tempCanvas.height = currentCvs.height || newH;
           if (currentCvs.width > 0 && currentCvs.height > 0) tempCanvas.getContext('2d').drawImage(currentCvs, 0, 0);
-          currentCvs.width = newW; currentCvs.height = newH; 
+          currentCvs.width = newW; currentCvs.height = newH;
           ctx.strokeStyle = 'var(--text)'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.drawImage(tempCanvas, 0, 0);
         }
       });
@@ -1455,24 +1455,24 @@ const HandWritingCanvas = forwardRef((props, ref) => {
     const observer = new ResizeObserver(resize); observer.observe(cvs.parentElement);
 
     const getPos = (e) => {
-      const rect = cvs.getBoundingClientRect(); 
-      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : (e.clientX || 0); 
-      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : (e.clientY || 0); 
+      const rect = cvs.getBoundingClientRect();
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : (e.clientX || 0);
+      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : (e.clientY || 0);
       return { x: clientX - rect.left, y: clientY - rect.top };
     };
     const startDraw = (e) => { e.preventDefault(); isDrawing.current = true; lastPos.current = getPos(e); };
-    const draw = (e) => { 
-      if (!isDrawing.current) return; e.preventDefault(); 
-      const pos = getPos(e); 
-      ctx.beginPath(); ctx.moveTo(lastPos.current.x, lastPos.current.y); ctx.lineTo(pos.x, pos.y); ctx.stroke(); 
-      lastPos.current = pos; 
+    const draw = (e) => {
+      if (!isDrawing.current) return; e.preventDefault();
+      const pos = getPos(e);
+      ctx.beginPath(); ctx.moveTo(lastPos.current.x, lastPos.current.y); ctx.lineTo(pos.x, pos.y); ctx.stroke();
+      lastPos.current = pos;
     };
     const stopDraw = () => { isDrawing.current = false; };
 
     cvs.addEventListener('touchstart', startDraw, { passive: false }); cvs.addEventListener('touchmove', draw, { passive: false }); cvs.addEventListener('touchend', stopDraw); cvs.addEventListener('touchcancel', stopDraw);
     cvs.addEventListener('pointerdown', startDraw); cvs.addEventListener('pointermove', draw); cvs.addEventListener('pointerup', stopDraw); cvs.addEventListener('pointerout', stopDraw);
 
-    return () => { 
+    return () => {
       observer.disconnect();
       cvs.removeEventListener('touchstart', startDraw); cvs.removeEventListener('touchmove', draw); cvs.removeEventListener('touchend', stopDraw); cvs.removeEventListener('touchcancel', stopDraw);
       cvs.removeEventListener('pointerdown', startDraw); cvs.removeEventListener('pointermove', draw); cvs.removeEventListener('pointerup', stopDraw); cvs.removeEventListener('pointerout', stopDraw);
@@ -1512,7 +1512,7 @@ const useExternalScripts = () => {
 // --- ホーム画面 ---
 const HomeView = ({ setView, stats, setStats, setConfigMode, initHost }) => {
   const { level, title, badge, color, progress, nextLevelExp } = getLevelInfo(stats.totalExp);
-  const chartData = Array.from({length: 7}).map((_, i) => {
+  const chartData = Array.from({ length: 7 }).map((_, i) => {
     const d = new Date(); d.setDate(d.getDate() - (6 - i));
     const dayData = stats.daily[d.toLocaleDateString()] || { exp: 0 };
     return { label: `${d.getDate()}日`, exp: dayData.exp };
@@ -1520,113 +1520,113 @@ const HomeView = ({ setView, stats, setStats, setConfigMode, initHost }) => {
   const maxExp = Math.max(...chartData.map(d => d.exp), 500);
 
   const claimMission = (mId) => {
-    let newStats = {...stats}; const m = newStats.missions.list.find(x => x.id === mId);
-    if(m && m.current >= m.target && !m.claimed) {
+    let newStats = { ...stats }; const m = newStats.missions.list.find(x => x.id === mId);
+    if (m && m.current >= m.target && !m.claimed) {
       audioCtrl.playSE('coin'); m.claimed = true; newStats.coins += m.reward;
       StorageAPI.saveStats(newStats); setStats(newStats); showToast('success', `${m.reward}コイン ゲット！`);
     }
   };
 
   return (
-  <div className="flex flex-col items-center relative gap-4 pb-10">
-    <div className="text-center">
-      <h2 className="font-black text-5xl mb-1 text-[var(--text)] tracking-wider">Qalc<span className="text-[var(--primary)]">.</span></h2>
-      <p className="text-[var(--text)] opacity-70 font-bold">めざせ、計算マスター！</p>
-    </div>
+    <div className="flex flex-col items-center relative gap-4 pb-10">
+      <div className="text-center">
+        <h2 className="font-black text-5xl mb-1 text-[var(--text)] tracking-wider">Qalc<span className="text-[var(--primary)]">.</span></h2>
+        <p className="text-[var(--text)] opacity-70 font-bold">めざせ、計算マスター！</p>
+      </div>
 
-    {/* Profile Card */}
-    <div className="w-full bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] shadow-[4px_4px_0_rgba(0,0,0,0.1)] p-4 relative">
+      {/* Profile Card */}
+      <div className="w-full bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] shadow-[4px_4px_0_rgba(0,0,0,0.1)] p-4 relative">
         <div className="absolute top-3 right-3 flex items-center gap-2">
           <div className="flex items-center gap-1 font-black text-sm text-[var(--text)] bg-[var(--accent)] px-3 py-1 rounded-full border-2 border-[var(--text)] shadow-sm"><Coins size={16} /> {stats.coins}</div>
         </div>
         <div className="flex items-center gap-4 mt-2">
-            <div className="bg-[var(--bg)] rounded-2xl w-[80px] h-[80px] border-[3px] border-[var(--text)] overflow-hidden">
-               <LayeredAvatar equipped={stats.equipped} size="text-5xl" className="w-full h-full" />
-            </div>
-            <div className="flex-grow text-left">
-                <div className="text-xs font-bold text-[var(--text)] opacity-70 mb-0.5"><span style={{color}}>{badge} {title}</span></div>
-                <div className="text-3xl font-black text-[var(--text)] tracking-wide">Lv.{level}</div>
-            </div>
+          <div className="bg-[var(--bg)] rounded-2xl w-[80px] h-[80px] border-[3px] border-[var(--text)] overflow-hidden">
+            <LayeredAvatar equipped={stats.equipped} size="text-5xl" className="w-full h-full" />
+          </div>
+          <div className="flex-grow text-left">
+            <div className="text-xs font-bold text-[var(--text)] opacity-70 mb-0.5"><span style={{ color }}>{badge} {title}</span></div>
+            <div className="text-3xl font-black text-[var(--text)] tracking-wide">Lv.{level}</div>
+          </div>
         </div>
         <div className="w-full mt-4 h-3 bg-gray-200 rounded-full overflow-hidden z-10 border border-[var(--text)]">
-            <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} className="h-full bg-[var(--secondary)]"></motion.div>
+          <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} className="h-full bg-[var(--secondary)]"></motion.div>
         </div>
         <div className="text-right w-full text-[10px] font-bold text-[var(--text)] opacity-60 mt-1">NEXT: {Math.floor(nextLevelExp - stats.totalExp)} pt</div>
-    </div>
+      </div>
 
-    <div className="grid grid-cols-3 gap-2 w-full">
-      <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] p-3 flex-col gap-1 h-auto" onClick={() => {setConfigMode('SCORE_ATTACK'); setView('singleConfig');}}>
-        <Award size={28} className="text-[var(--accent)]"/> <span className="text-xs leading-tight">スコア<br/>アタック</span>
-      </MotionButton>
-      <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] p-3 flex-col gap-1 h-auto" onClick={() => {setConfigMode('TIME_ATTACK'); setView('singleConfig');}}>
-        <Timer size={28} className="text-[var(--secondary)]"/> <span className="text-xs leading-tight">タイム<br/>アタック</span>
-      </MotionButton>
-      <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] p-3 flex-col gap-1 h-auto" onClick={() => {setConfigMode('SUDDEN_DEATH'); setView('singleConfig');}}>
-        <Swords size={28} className="text-[var(--primary)]"/> <span className="text-xs leading-tight">サドン<br/>デス</span>
-      </MotionButton>
-    </div>
+      <div className="grid grid-cols-3 gap-2 w-full">
+        <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] p-3 flex-col gap-1 h-auto" onClick={() => { setConfigMode('SCORE_ATTACK'); setView('singleConfig'); }}>
+          <Award size={28} className="text-[var(--accent)]" /> <span className="text-xs leading-tight">スコア<br />アタック</span>
+        </MotionButton>
+        <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] p-3 flex-col gap-1 h-auto" onClick={() => { setConfigMode('TIME_ATTACK'); setView('singleConfig'); }}>
+          <Timer size={28} className="text-[var(--secondary)]" /> <span className="text-xs leading-tight">タイム<br />アタック</span>
+        </MotionButton>
+        <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] p-3 flex-col gap-1 h-auto" onClick={() => { setConfigMode('SUDDEN_DEATH'); setView('singleConfig'); }}>
+          <Swords size={28} className="text-[var(--primary)]" /> <span className="text-xs leading-tight">サドン<br />デス</span>
+        </MotionButton>
+      </div>
 
-    {/* マルチプレイ（ホスト・ゲストモード）ボタン追加 */}
-    <div className="w-full flex flex-col gap-2">
-      <MotionButton className="bg-[var(--accent)] text-[var(--text)] w-full py-4 text-xl border-[4px] border-[var(--text)]" onClick={initHost}>
-        <Users size={24} /> みんなであそぶ（ルームをつくる）
-      </MotionButton>
-      <MotionButton className="bg-[var(--secondary)] text-[var(--panel)] w-full py-4 text-xl border-[4px] border-[var(--text)]" onClick={() => setView('clientJoin')}>
-        <User size={24} /> ルームに入る
-      </MotionButton>
-    </div>
+      {/* マルチプレイ（先生・児童モード）ボタン追加 */}
+      <div className="w-full flex flex-col gap-2">
+        <MotionButton className="bg-[var(--accent)] text-[var(--text)] w-full py-4 text-xl border-[4px] border-[var(--text)]" onClick={initHost}>
+          <Users size={24} /> みんなであそぶ（へやをつくる）
+        </MotionButton>
+        <MotionButton className="bg-[var(--secondary)] text-[var(--panel)] w-full py-4 text-xl border-[4px] border-[var(--text)]" onClick={() => setView('clientJoin')}>
+          <User size={24} /> へやに入る
+        </MotionButton>
+      </div>
 
-    {/* ミッションパネル */}
-    <div className="w-full bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] p-4">
-      <h4 className="font-bold text-[var(--text)] mb-3 flex items-center gap-2"><CheckCircle2 size={20} className="text-[var(--secondary)]"/> 今日のミッション</h4>
-      <div className="flex flex-col gap-2">
-        {stats.missions?.list.map(m => {
-          const isCleared = m.current >= m.target;
-          return (
-            <div key={m.id} className="flex items-center justify-between bg-[var(--bg)] p-2 rounded-xl border-2 border-transparent">
-              <div className="flex flex-col flex-grow pr-2">
-                <span className={`text-sm font-bold ${isCleared ? 'text-[var(--secondary)] line-through' : 'text-[var(--text)]'}`}>{m.desc}</span>
-                <span className="text-xs text-[var(--text)] opacity-60 font-bold">{Math.min(m.current, m.target)} / {m.target}</span>
+      {/* ミッションパネル */}
+      <div className="w-full bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] p-4">
+        <h4 className="font-bold text-[var(--text)] mb-3 flex items-center gap-2"><CheckCircle2 size={20} className="text-[var(--secondary)]" /> 今日のミッション</h4>
+        <div className="flex flex-col gap-2">
+          {stats.missions?.list.map(m => {
+            const isCleared = m.current >= m.target;
+            return (
+              <div key={m.id} className="flex items-center justify-between bg-[var(--bg)] p-2 rounded-xl border-2 border-transparent">
+                <div className="flex flex-col flex-grow pr-2">
+                  <span className={`text-sm font-bold ${isCleared ? 'text-[var(--secondary)] line-through' : 'text-[var(--text)]'}`}>{m.desc}</span>
+                  <span className="text-xs text-[var(--text)] opacity-60 font-bold">{Math.min(m.current, m.target)} / {m.target}</span>
+                </div>
+                {isCleared ? (
+                  m.claimed ? <span className="text-[var(--text)] opacity-40 font-bold text-xs flex items-center"><CheckCircle2 size={16} /> 完了</span>
+                    : <button onClick={() => claimMission(m.id)} className="bg-[var(--accent)] text-[var(--text)] font-bold text-xs px-3 py-1.5 rounded-lg border-2 border-[var(--text)] active:scale-95 whitespace-nowrap">うけとる</button>
+                ) : (
+                  <span className="flex items-center gap-1 font-bold text-xs text-[var(--text)] opacity-60"><Coins size={14} /> {m.reward}</span>
+                )}
               </div>
-              {isCleared ? (
-                m.claimed ? <span className="text-[var(--text)] opacity-40 font-bold text-xs flex items-center"><CheckCircle2 size={16}/> 完了</span> 
-                : <button onClick={()=>claimMission(m.id)} className="bg-[var(--accent)] text-[var(--text)] font-bold text-xs px-3 py-1.5 rounded-lg border-2 border-[var(--text)] active:scale-95 whitespace-nowrap">うけとる</button>
-              ) : (
-                <span className="flex items-center gap-1 font-bold text-xs text-[var(--text)] opacity-60"><Coins size={14}/> {m.reward}</span>
-              )}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* がんばりグラフ */}
+      <div className="w-full bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] p-4">
+        <h4 className="font-bold text-[var(--text)] mb-4 flex items-center gap-2"><BarChart3 size={18} /> がんばりグラフ (直近7日)</h4>
+        <div className="flex justify-between h-24 gap-1">
+          {chartData.map((d, i) => (
+            <div key={i} className="flex flex-col items-center flex-1 h-full group">
+              <div className="w-full flex-grow flex items-end justify-center relative">
+                <div className="absolute -top-6 opacity-0 group-hover:opacity-100 text-[10px] font-bold text-[var(--text)] transition-opacity bg-[var(--panel)] px-1 rounded border z-10 shadow-sm">{d.exp}</div>
+                <motion.div initial={{ height: 0 }} animate={{ height: `${Math.max((d.exp / maxExp) * 100, 2)}%` }} className={`w-full max-w-[20px] rounded-t-sm ${d.exp > 0 ? 'bg-[var(--secondary)]' : 'bg-gray-200'}`}></motion.div>
+              </div>
+              <div className="text-[9px] font-bold text-[var(--text)] opacity-50 mt-1 shrink-0">{d.label}</div>
             </div>
-          );
-        })}
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full flex gap-2">
+        <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => setView('shop')}><Store size={20} /> きせかえ</MotionButton>
+        <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => setView('manager')}><Settings size={20} /> コース管理</MotionButton>
       </div>
     </div>
-
-    {/* がんばりグラフ */}
-    <div className="w-full bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] p-4">
-      <h4 className="font-bold text-[var(--text)] mb-4 flex items-center gap-2"><BarChart3 size={18} /> がんばりグラフ (直近7日)</h4>
-      <div className="flex justify-between items-end h-24 gap-1">
-        {chartData.map((d, i) => (
-          <div key={i} className="flex flex-col items-center flex-1 group">
-            <div className="w-full flex-grow flex items-end justify-center relative">
-              <div className="absolute -top-6 opacity-0 group-hover:opacity-100 text-[10px] font-bold text-[var(--text)] transition-opacity bg-[var(--panel)] px-1 rounded border z-10 shadow-sm">{d.exp}</div>
-              <motion.div initial={{ height: 0 }} animate={{ height: `${Math.max((d.exp / maxExp) * 100, 2)}%` }} className={`w-full max-w-[20px] rounded-t-sm ${d.exp > 0 ? 'bg-[var(--secondary)]' : 'bg-gray-200'}`}></motion.div>
-            </div>
-            <div className="text-[9px] font-bold text-[var(--text)] opacity-50 mt-1">{d.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <div className="w-full flex gap-2">
-      <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => setView('shop')}><Store size={20} /> きせかえ</MotionButton>
-      <MotionButton className="bg-[var(--panel)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => setView('manager')}><Settings size={20} /> コース管理</MotionButton>
-    </div>
-  </div>
   );
 };
 
-// --- ホスト ルーム画面 ---
+// --- ホスト(先生) ルーム画面 ---
 const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, setConfigMode }) => {
-  const [groups, setGroups] = useState([]); const [selectedGroup, setSelectedGroup] = useState(''); 
+  const [groups, setGroups] = useState([]); const [selectedGroup, setSelectedGroup] = useState('');
   const [time, setTime] = useState(3);
   const [selectedGrade, setSelectedGrade] = useState('すべて');
   const grades = ['すべて', '1年', '2年', '3年', '4年', '5年', '6年', 'その他'];
@@ -1661,7 +1661,7 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
       courseName: selectedGroup,
       gameMode: configMode
     };
-    
+
     setState(gameConfig);
     // 全クライアントにゲーム設定を送信して開始させる
     broadcast({ type: 'game_start', data: gameConfig });
@@ -1671,7 +1671,7 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
   return (
     <div className="flex flex-col h-[85vh] gap-4">
       <div className="flex justify-between items-center bg-[var(--panel)] p-3 rounded-2xl border-[3px] border-[var(--text)] shrink-0 shadow-sm">
-        <h3 className="font-black text-xl flex items-center gap-2 text-[var(--text)]"><Users size={24} className="text-[var(--secondary)]"/> みんなのへや</h3>
+        <h3 className="font-black text-xl flex items-center gap-2 text-[var(--text)]"><Users size={24} className="text-[var(--secondary)]" /> みんなのへや</h3>
         <div className="font-bold bg-[var(--secondary)] text-white px-3 py-1 rounded-full border-2 border-[var(--text)]">接続: {Object.keys(peerState.participants).length}人</div>
       </div>
 
@@ -1682,8 +1682,8 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
           <p className="font-bold text-sm text-[var(--text)] mb-3">この数字を入力するか、QRコードを読み込んでね</p>
           <div id="qrcode" className="bg-white p-3 rounded-xl mb-3 shadow-inner"></div>
           <div className="w-full flex items-center bg-white border-2 border-gray-200 rounded-lg p-2">
-             <input type="text" readOnly value={`${window.location.origin}${window.location.pathname}?host=${peerState.hostId}`} className="text-xs font-mono w-full outline-none bg-transparent" />
-             <button onClick={()=>{navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?host=${peerState.hostId}`); showToast('success','コピーしました');}} className="text-gray-500 hover:text-[var(--primary)] ml-2"><Share2 size={16}/></button>
+            <input type="text" readOnly value={`${window.location.origin}${window.location.pathname}?host=${peerState.hostId}`} className="text-xs font-mono w-full outline-none bg-transparent" />
+            <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?host=${peerState.hostId}`); showToast('success', 'コピーしました'); }} className="text-gray-500 hover:text-[var(--primary)] ml-2"><Share2 size={16} /></button>
           </div>
         </div>
 
@@ -1691,9 +1691,9 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
           <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70">出題モード</label>
           <div className="flex gap-2 mb-4">
             {['SCORE_ATTACK', 'TIME_ATTACK', 'SUDDEN_DEATH'].map(mode => (
-               <button key={mode} onClick={()=>{audioCtrl.playSE('click'); setConfigMode(mode);}} className={`flex-1 py-2 text-xs font-bold rounded-lg border-2 transition-colors ${configMode === mode ? 'bg-[var(--text)] text-white border-[var(--text)]' : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400'}`}>
-                  {mode === 'SCORE_ATTACK' ? 'スコア' : mode === 'TIME_ATTACK' ? 'タイム' : 'サドンデス'}
-               </button>
+              <button key={mode} onClick={() => { audioCtrl.playSE('click'); setConfigMode(mode); }} className={`flex-1 py-2 text-xs font-bold rounded-lg border-2 transition-colors ${configMode === mode ? 'bg-[var(--text)] text-white border-[var(--text)]' : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400'}`}>
+                {mode === 'SCORE_ATTACK' ? 'スコア' : mode === 'TIME_ATTACK' ? 'タイム' : 'サドンデス'}
+              </button>
             ))}
           </div>
 
@@ -1704,7 +1704,7 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
 
           <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70">コースを選択</label>
           <div className="relative mb-2">
-            <select className="w-full appearance-none border-[3px] rounded-xl p-3 font-bold outline-none bg-[var(--bg)] text-[var(--text)] border-[var(--text)] focus:border-[var(--secondary)]" value={selectedGroup} onChange={e=>setSelectedGroup(e.target.value)}>
+            <select className="w-full appearance-none border-[3px] rounded-xl p-3 font-bold outline-none bg-[var(--bg)] text-[var(--text)] border-[var(--text)] focus:border-[var(--secondary)]" value={selectedGroup} onChange={e => setSelectedGroup(e.target.value)}>
               {filteredGroups.length > 0 ? filteredGroups.map(g => <option key={g.name} value={g.name}>{g.name} ({g.count}問)</option>) : <option value="">該当するコースがありません</option>}
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text)]"><ChevronRight size={20} className="rotate-90" /></div>
@@ -1713,31 +1713,31 @@ const HostRoomView = ({ peerState, broadcast, setView, setState, configMode, set
 
         {configMode === 'SCORE_ATTACK' && (
           <div className="shrink-0 mb-2">
-             <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70 flex justify-between"><span>制限時間</span><span className="text-[var(--primary)] text-lg">{time} 分</span></label>
-             <input type="range" min="1" max="10" value={time} onChange={e=>setTime(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--primary)]" />
+            <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70 flex justify-between"><span>制限時間</span><span className="text-[var(--primary)] text-lg">{time} 分</span></label>
+            <input type="range" min="1" max="10" value={time} onChange={e => setTime(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--primary)]" />
           </div>
         )}
 
         <div className="shrink-0">
           <h4 className="font-black text-lg text-[var(--text)] border-b-2 border-dashed border-gray-200 pb-2 mb-3">参加者の状況</h4>
           <div className="flex flex-col gap-2">
-             {Object.keys(peerState.participants).length === 0 && <p className="text-center text-gray-400 py-4 font-bold text-sm">参加者がいません</p>}
-             {Object.entries(peerState.participants).sort((a,b)=>b[1].score - a[1].score).map(([id, p], index) => (
-                <div key={id} className="flex justify-between items-center bg-[var(--bg)] p-3 rounded-xl border-2 border-[var(--text)]">
-                  <div className="flex items-center gap-3">
-                     <span className="font-black text-gray-400 w-4 text-center">{index + 1}</span>
-                     <span className="font-bold text-[var(--text)]">{p.name}</span>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm font-bold">
-                     <span className="text-[var(--secondary)]">🔥 {p.combo} Combo</span>
-                     <span className="text-[var(--primary)] w-16 text-right font-black">{p.score} pt</span>
-                  </div>
+            {Object.keys(peerState.participants).length === 0 && <p className="text-center text-gray-400 py-4 font-bold text-sm">参加者がいません</p>}
+            {Object.entries(peerState.participants).sort((a, b) => b[1].score - a[1].score).map(([id, p], index) => (
+              <div key={id} className="flex justify-between items-center bg-[var(--bg)] p-3 rounded-xl border-2 border-[var(--text)]">
+                <div className="flex items-center gap-3">
+                  <span className="font-black text-gray-400 w-4 text-center">{index + 1}</span>
+                  <span className="font-bold text-[var(--text)]">{p.name}</span>
                 </div>
-             ))}
+                <div className="flex items-center gap-4 text-sm font-bold">
+                  <span className="text-[var(--secondary)]">🔥 {p.combo} Combo</span>
+                  <span className="text-[var(--primary)] w-16 text-right font-black">{p.score} pt</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      
+
       <MotionButton className="bg-[var(--primary)] text-[var(--panel)] w-full py-4 text-xl border-[3px] border-[var(--text)] shrink-0" onClick={startGame}><Radio size={24} /> 全員でゲーム開始！</MotionButton>
     </div>
   );
@@ -1750,62 +1750,63 @@ const ClientJoinView = ({ initClient, urlHostId, setView }) => {
   return (
     <div className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] p-6 text-center shadow-md max-w-sm mx-auto mt-10 flex flex-col">
       <div className="bg-[var(--accent)] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--text)] shrink-0">
-         <Users size={32} className="text-[var(--text)]"/>
+        <Users size={32} className="text-[var(--text)]" />
       </div>
       <h3 className="font-black text-2xl mb-4 text-[var(--text)] shrink-0">へやに入ります</h3>
-      
+
       {!urlHostId && (
         <div className="mb-4 shrink-0">
           <p className="font-bold mb-2 text-[var(--text)] opacity-70 text-sm">ルーム番号（数字）</p>
-          <input 
-            type="text" 
+          <input
+            type="text"
             inputMode="numeric"
-            className="w-full border-[3px] border-[var(--text)] rounded-xl p-4 font-black text-2xl tracking-widest text-center outline-none focus:border-[var(--secondary)] bg-[var(--bg)]" 
-            placeholder="123456" 
-            value={roomId} 
-            onChange={(e)=>setRoomId(e.target.value.replace(/[^0-9]/g, ''))} 
+            className="w-full border-[3px] border-[var(--text)] rounded-xl p-4 font-black text-2xl tracking-widest text-center outline-none focus:border-[var(--secondary)] bg-[var(--bg)]"
+            placeholder="123456"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value.replace(/[^0-9]/g, ''))}
           />
         </div>
       )}
-      
+
       <div className="mb-6 shrink-0">
         <p className="font-bold mb-2 text-[var(--text)] opacity-70 text-sm">あなたの名前</p>
-        <input 
-          type="text" 
-          className="w-full border-[3px] border-[var(--text)] rounded-xl p-4 font-black text-xl text-center outline-none focus:border-[var(--secondary)] bg-[var(--bg)]" 
-          placeholder="なまえ" 
-          value={name} 
-          onChange={(e)=>setName(e.target.value)} 
-          onKeyDown={(e) => { if (e.key === 'Enter') { if(!roomId.trim()) return showToast('warning', 'ルーム番号を入力してください'); if(!name.trim()) return showToast('warning', '名前を入力してください'); initClient(name, roomId); } }}
+        <input
+          type="text"
+          className="w-full border-[3px] border-[var(--text)] rounded-xl p-4 font-black text-xl text-center outline-none focus:border-[var(--secondary)] bg-[var(--bg)]"
+          placeholder="なまえ"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { if (!roomId.trim()) return showToast('warning', 'ルーム番号を入力してください'); if (!name.trim()) return showToast('warning', '名前を入力してください'); initClient(name, roomId); } }}
         />
       </div>
 
-      <MotionButton 
-        className="bg-[var(--secondary)] text-[var(--panel)] w-full py-4 text-xl border-[3px] border-[var(--text)] shrink-0" 
+      <MotionButton
+        className="bg-[var(--secondary)] text-[var(--panel)] w-full py-4 text-xl border-[3px] border-[var(--text)] shrink-0"
         onClick={() => {
-          if(!roomId.trim()) return showToast('warning', 'ルーム番号を入力してください');
-          if(!name.trim()) return showToast('warning', '名前を入力してください');
+          if (!roomId.trim()) return showToast('warning', 'ルーム番号を入力してください');
+          if (!name.trim()) return showToast('warning', '名前を入力してください');
           initClient(name, roomId);
         }}
       >
         へやに入る！
       </MotionButton>
-      
-      <button className="text-[var(--text)] opacity-50 font-bold mt-4 hover:opacity-100 transition shrink-0" onClick={()=>{audioCtrl.playSE('click'); setView('home')}}>もどる</button>
+
+      <button className="text-[var(--text)] opacity-50 font-bold mt-4 hover:opacity-100 transition shrink-0" onClick={() => { audioCtrl.playSE('click'); setView('home') }}>もどる</button>
     </div>
   );
 };
 
 // --- クライアント 待機画面 ---
-const ClientWaitView = ({ peerState }) => (
+const ClientWaitView = ({ peerState, leaveRoom }) => (
   <div className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] p-8 text-center shadow-md flex flex-col items-center justify-center min-h-[50vh] max-w-sm mx-auto mt-10">
     <div className="animate-spin mb-6 bg-[var(--bg)] p-4 rounded-full border-2 border-[var(--text)]">
-       <Radio size={48} className="text-[var(--secondary)]" />
+      <Radio size={48} className="text-[var(--secondary)]" />
     </div>
-    <h3 className="font-black text-3xl text-[var(--text)] mb-3">{peerState.myName} さん、<br/>準備OK！</h3>
-    <p className="font-bold text-[var(--text)] opacity-70 bg-[var(--accent)] px-4 py-2 rounded-lg border-2 border-[var(--text)]">
-       先生がスタートするまで<br/>このまま待っていてね
+    <h3 className="font-black text-3xl text-[var(--text)] mb-3">{peerState.myName} さん、<br />準備OK！</h3>
+    <p className="font-bold text-[var(--text)] opacity-70 bg-[var(--accent)] px-4 py-2 rounded-lg border-2 border-[var(--text)] mb-6">
+      先生がスタートするまで<br />このまま待っていてね
     </p>
+    <button className="text-[var(--text)] opacity-50 font-bold hover:opacity-100 transition underline" onClick={leaveRoom}>やめる（退出する）</button>
   </div>
 );
 
@@ -1813,14 +1814,14 @@ const ClientWaitView = ({ peerState }) => (
 // --- ショップ＆きせかえ画面 ---
 const ShopView = ({ setView, stats, setStats }) => {
   const [tab, setTab] = useState('bases');
-  const [confirmItem, setConfirmItem] = useState(null); 
-  
+  const [confirmItem, setConfirmItem] = useState(null);
+
   const handleItemClick = (item, category) => {
-    audioCtrl.playSE('click'); let newStats = {...stats}; const isOwned = newStats.inventory[category].includes(item.id);
+    audioCtrl.playSE('click'); let newStats = { ...stats }; const isOwned = newStats.inventory[category].includes(item.id);
 
     if (!isOwned) {
       if (newStats.coins >= item.price) {
-        setConfirmItem({ item, category }); 
+        setConfirmItem({ item, category });
       } else {
         showToast('error', 'コインが足りません');
       }
@@ -1838,15 +1839,15 @@ const ShopView = ({ setView, stats, setStats }) => {
   const executeBuy = () => {
     if (!confirmItem) return;
     const { item, category } = confirmItem;
-    let newStats = {...stats};
-    newStats.coins -= item.price; 
-    newStats.inventory[category].push(item.id); 
-    
-    if (category === 'themes') { newStats.theme = item.id; } 
+    let newStats = { ...stats };
+    newStats.coins -= item.price;
+    newStats.inventory[category].push(item.id);
+
+    if (category === 'themes') { newStats.theme = item.id; }
     else { const propName = category.slice(0, -1); newStats.equipped[propName] = item.id; }
-    
+
     audioCtrl.playSE('coin'); showToast('success', '購入しました！');
-    StorageAPI.saveStats(newStats); setStats(newStats); setConfirmItem(null); 
+    StorageAPI.saveStats(newStats); setStats(newStats); setConfirmItem(null);
   };
 
   return (
@@ -1855,11 +1856,11 @@ const ShopView = ({ setView, stats, setStats }) => {
         {confirmItem && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] shadow-xl p-6 w-full max-w-xs flex flex-col items-center text-center">
-              <div className="text-5xl mb-3 h-16 flex items-center justify-center">{confirmItem.category === 'themes' ? <PaintBucket size={48} className="text-[var(--text)]"/> : confirmItem.item.char}</div>
-              <h3 className="font-black text-xl text-[var(--text)] mb-2 leading-snug">「{confirmItem.item.name}」を<br/>買いますか？</h3>
-              <p className="font-bold text-[var(--primary)] mb-6 flex items-center gap-1 justify-center"><Coins size={20}/> {confirmItem.item.price}</p>
+              <div className="text-5xl mb-3 h-16 flex items-center justify-center">{confirmItem.category === 'themes' ? <PaintBucket size={48} className="text-[var(--text)]" /> : confirmItem.item.char}</div>
+              <h3 className="font-black text-xl text-[var(--text)] mb-2 leading-snug">「{confirmItem.item.name}」を<br />買いますか？</h3>
+              <p className="font-bold text-[var(--primary)] mb-6 flex items-center gap-1 justify-center"><Coins size={20} /> {confirmItem.item.price}</p>
               <div className="flex w-full gap-3">
-                <MotionButton className="bg-[var(--bg)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => {audioCtrl.playSE('click'); setConfirmItem(null);}}>やめる</MotionButton>
+                <MotionButton className="bg-[var(--bg)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => { audioCtrl.playSE('click'); setConfirmItem(null); }}>やめる</MotionButton>
                 <MotionButton className="bg-[var(--accent)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={executeBuy}>かう！</MotionButton>
               </div>
             </motion.div>
@@ -1868,7 +1869,7 @@ const ShopView = ({ setView, stats, setStats }) => {
       </AnimatePresence>
 
       <div className="flex justify-between items-center mb-4 shrink-0">
-        <h3 className="font-bold text-xl text-[var(--text)] flex items-center gap-2"><Store size={24}/> ショップ＆きせかえ</h3>
+        <h3 className="font-bold text-xl text-[var(--text)] flex items-center gap-2"><Store size={24} /> ショップ＆きせかえ</h3>
         <div className="flex items-center gap-1 font-black text-sm text-[var(--text)] bg-[var(--accent)] px-3 py-1.5 rounded-full border-[3px] border-[var(--text)]"><Coins size={16} /> {stats.coins}</div>
       </div>
 
@@ -1877,8 +1878,8 @@ const ShopView = ({ setView, stats, setStats }) => {
           <LayeredAvatar equipped={stats.equipped} size="text-6xl" className="w-full h-full" />
         </div>
         <div className="flex-grow grid grid-cols-3 gap-1 content-start">
-          {[{id:'bases', icon:<User size={16}/>, label:'ベース'}, {id:'hats', icon:<Shirt size={16}/>, label:'ぼうし'}, {id:'faces', icon:<span className="text-sm">🕶️</span>, label:'かお'}, {id:'props', icon:<span className="text-sm">🎒</span>, label:'もちもの'}, {id:'themes', icon:<PaintBucket size={16}/>, label:'テーマ'}].map(t => (
-            <button key={t.id} onClick={()=>{audioCtrl.playSE('click'); setTab(t.id);}} className={`flex flex-col items-center justify-center p-1 rounded-lg border-2 font-bold text-[10px] transition-all ${tab===t.id ? 'bg-[var(--text)] text-[var(--panel)] border-[var(--text)]' : 'bg-[var(--panel)] text-[var(--text)] opacity-60 border-transparent hover:bg-[var(--bg)]'}`}>
+          {[{ id: 'bases', icon: <User size={16} />, label: 'ベース' }, { id: 'hats', icon: <Shirt size={16} />, label: 'ぼうし' }, { id: 'faces', icon: <span className="text-sm">🕶️</span>, label: 'かお' }, { id: 'props', icon: <span className="text-sm">🎒</span>, label: 'もちもの' }, { id: 'themes', icon: <PaintBucket size={16} />, label: 'テーマ' }].map(t => (
+            <button key={t.id} onClick={() => { audioCtrl.playSE('click'); setTab(t.id); }} className={`flex flex-col items-center justify-center p-1 rounded-lg border-2 font-bold text-[10px] transition-all ${tab === t.id ? 'bg-[var(--text)] text-[var(--panel)] border-[var(--text)]' : 'bg-[var(--panel)] text-[var(--text)] opacity-60 border-transparent hover:bg-[var(--bg)]'}`}>
               {t.icon} {t.label}
             </button>
           ))}
@@ -1888,13 +1889,13 @@ const ShopView = ({ setView, stats, setStats }) => {
       <div className="bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] flex-grow p-3 overflow-y-auto grid grid-cols-3 gap-3 content-start shadow-sm">
         {SHOP_ITEMS[tab].map(item => {
           const isOwned = stats.inventory[tab].includes(item.id);
-          const isEquipped = tab === 'themes' ? stats.theme === item.id : stats.equipped[tab.slice(0,-1)] === item.id;
+          const isEquipped = tab === 'themes' ? stats.theme === item.id : stats.equipped[tab.slice(0, -1)] === item.id;
           return (
-            <div key={item.id} onClick={()=>handleItemClick(item, tab)} className={`flex flex-col items-center p-2 rounded-xl border-[3px] cursor-pointer transition-transform active:scale-95 ${isEquipped ? 'bg-[var(--accent)] border-[var(--text)]' : isOwned ? 'bg-[var(--bg)] border-[var(--text)] opacity-80' : 'bg-[var(--panel)] border-gray-200 grayscale hover:grayscale-0'}`}>
-              <div className="text-3xl mb-1 h-10 flex items-center justify-center">{tab==='themes' ? <PaintBucket size={28} className={isEquipped ? 'text-[var(--text)]' : 'text-gray-400'}/> : item.char}</div>
+            <div key={item.id} onClick={() => handleItemClick(item, tab)} className={`flex flex-col items-center p-2 rounded-xl border-[3px] cursor-pointer transition-transform active:scale-95 ${isEquipped ? 'bg-[var(--accent)] border-[var(--text)]' : isOwned ? 'bg-[var(--bg)] border-[var(--text)] opacity-80' : 'bg-[var(--panel)] border-gray-200 grayscale hover:grayscale-0'}`}>
+              <div className="text-3xl mb-1 h-10 flex items-center justify-center">{tab === 'themes' ? <PaintBucket size={28} className={isEquipped ? 'text-[var(--text)]' : 'text-gray-400'} /> : item.char}</div>
               <div className="text-[9px] font-bold text-[var(--text)] text-center leading-tight h-6 overflow-hidden">{item.name}</div>
               <div className="mt-1 w-full text-center">
-                {isOwned ? <span className="text-[10px] font-bold bg-[var(--text)] text-[var(--panel)] px-2 py-0.5 rounded-full">{isEquipped ? 'そうび中' : 'もってる'}</span> : <span className="text-[10px] font-bold text-[var(--text)] bg-[var(--accent)] border border-[var(--text)] px-1.5 py-0.5 rounded-full flex items-center justify-center gap-0.5"><Coins size={10}/>{item.price}</span>}
+                {isOwned ? <span className="text-[10px] font-bold bg-[var(--text)] text-[var(--panel)] px-2 py-0.5 rounded-full">{isEquipped ? 'そうび中' : 'もってる'}</span> : <span className="text-[10px] font-bold text-[var(--text)] bg-[var(--accent)] border border-[var(--text)] px-1.5 py-0.5 rounded-full flex items-center justify-center gap-0.5"><Coins size={10} />{item.price}</span>}
               </div>
             </div>
           );
@@ -1919,7 +1920,7 @@ const SingleConfigView = ({ setView, setState, configMode }) => {
   });
 
   useEffect(() => { if (filteredGroups.length > 0 && !filteredGroups.find(g => g.name === selectedGroup)) setSelectedGroup(filteredGroups[0].name); }, [selectedGrade, groups]);
-  useEffect(() => { const list = StorageAPI.getProblemGroups(); if(mistakesCount > 0) list.unshift({ name: 'mistakes', count: mistakesCount, displayName: '★ にがて克服ボックス' }); setGroups(list); }, []);
+  useEffect(() => { const list = StorageAPI.getProblemGroups(); if (mistakesCount > 0) list.unshift({ name: 'mistakes', count: mistakesCount, displayName: '★ にがて克服ボックス' }); setGroups(list); }, []);
 
   const start = () => {
     if (!selectedGroup) return showToast('warning', 'コースを選択してください');
@@ -1928,9 +1929,9 @@ const SingleConfigView = ({ setView, setState, configMode }) => {
     if (isShuffle) probs = [...probs].sort(() => Math.random() - 0.5);
     if (configMode === 'TIME_ATTACK') probs = probs.slice(0, 20);
 
-    setState({ 
-      timeLimitSec: configMode === 'SCORE_ATTACK' ? time * 60 : 0, 
-      problemSet: probs.map(p => ({ q: p.q, a: String(p.a).split('|') })), 
+    setState({
+      timeLimitSec: configMode === 'SCORE_ATTACK' ? time * 60 : 0,
+      problemSet: probs.map(p => ({ q: p.q, a: String(p.a).split('|') })),
       courseName: selectedGroup === 'mistakes' ? 'にがて克服ボックス' : selectedGroup,
       gameMode: configMode
     });
@@ -1945,7 +1946,7 @@ const SingleConfigView = ({ setView, setState, configMode }) => {
           {configMode === 'TIME_ATTACK' && <><Timer size={28} className="text-[var(--secondary)]" /> タイムアタック</>}
           {configMode === 'SUDDEN_DEATH' && <><Swords size={28} className="text-[var(--primary)]" /> サドンデス</>}
         </h3>
-        
+
         <div>
           <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70">学年</label>
           <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar sm:flex-wrap sm:overflow-visible sm:pb-0">
@@ -1954,32 +1955,32 @@ const SingleConfigView = ({ setView, setState, configMode }) => {
         </div>
 
         <div>
-            <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70">コース</label>
-            <div className="relative">
-              <select className={`w-full appearance-none border-[3px] rounded-xl p-3 font-bold outline-none bg-[var(--panel)] text-[var(--text)] focus:border-[var(--secondary)] ${selectedGroup === 'mistakes' ? 'border-[var(--primary)]' : 'border-[var(--text)]'}`} value={selectedGroup} onChange={e=>{audioCtrl.playSE('click'); setSelectedGroup(e.target.value);}}>
-                {filteredGroups.length > 0 ? filteredGroups.map(g => <option key={g.name} value={g.name}>{g.displayName || g.name} ({g.count}問)</option>) : <option value="">該当するコースがありません</option>}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text)]"><ChevronRight size={20} className="rotate-90" /></div>
-            </div>
+          <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70">コース</label>
+          <div className="relative">
+            <select className={`w-full appearance-none border-[3px] rounded-xl p-3 font-bold outline-none bg-[var(--panel)] text-[var(--text)] focus:border-[var(--secondary)] ${selectedGroup === 'mistakes' ? 'border-[var(--primary)]' : 'border-[var(--text)]'}`} value={selectedGroup} onChange={e => { audioCtrl.playSE('click'); setSelectedGroup(e.target.value); }}>
+              {filteredGroups.length > 0 ? filteredGroups.map(g => <option key={g.name} value={g.name}>{g.displayName || g.name} ({g.count}問)</option>) : <option value="">該当するコースがありません</option>}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text)]"><ChevronRight size={20} className="rotate-90" /></div>
+          </div>
         </div>
 
         {configMode === 'SCORE_ATTACK' && (
-          <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}}>
-              <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70 flex justify-between"><span>制限時間</span><span className="text-[var(--primary)] text-lg">{time} 分</span></label>
-              <input type="range" min="1" max="10" value={time} onChange={e=>setTime(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--primary)]" />
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+            <label className="font-bold text-sm block mb-1 text-[var(--text)] opacity-70 flex justify-between"><span>制限時間</span><span className="text-[var(--primary)] text-lg">{time} 分</span></label>
+            <input type="range" min="1" max="10" value={time} onChange={e => setTime(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--primary)]" />
           </motion.div>
         )}
 
-        <div className="flex items-center gap-3 bg-[var(--bg)] p-3 rounded-xl border border-[var(--text)] cursor-pointer" onClick={() => {audioCtrl.playSE('click'); setIsShuffle(!isShuffle);}}>
-            <div className={`w-6 h-6 rounded flex items-center justify-center border-2 transition-colors ${isShuffle ? 'bg-[var(--secondary)] border-[var(--secondary)]' : 'bg-[var(--panel)] border-[var(--text)]'}`}>
-              {isShuffle && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>}
-            </div>
-            <label className="font-bold text-sm text-[var(--text)] select-none cursor-pointer">問題をランダムに出題する</label>
+        <div className="flex items-center gap-3 bg-[var(--bg)] p-3 rounded-xl border border-[var(--text)] cursor-pointer" onClick={() => { audioCtrl.playSE('click'); setIsShuffle(!isShuffle); }}>
+          <div className={`w-6 h-6 rounded flex items-center justify-center border-2 transition-colors ${isShuffle ? 'bg-[var(--secondary)] border-[var(--secondary)]' : 'bg-[var(--panel)] border-[var(--text)]'}`}>
+            {isShuffle && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>}
+          </div>
+          <label className="font-bold text-sm text-[var(--text)] select-none cursor-pointer">問題をランダムに出題する</label>
         </div>
 
         <div className="mt-2 space-y-3">
           <MotionButton className="bg-[var(--primary)] text-[var(--panel)] w-full py-4 text-xl border-[3px] border-[var(--text)]" onClick={start}><Gamepad2 size={24} /> スタート！</MotionButton>
-          <button className="text-[var(--text)] opacity-50 font-bold text-sm py-2 w-full hover:opacity-100 transition" onClick={() => {audioCtrl.playSE('click'); setView('home')}}>もどる</button>
+          <button className="text-[var(--text)] opacity-50 font-bold text-sm py-2 w-full hover:opacity-100 transition" onClick={() => { audioCtrl.playSE('click'); setView('home') }}>もどる</button>
         </div>
       </div>
     </div>
@@ -1989,12 +1990,16 @@ const SingleConfigView = ({ setView, setState, configMode }) => {
 // --- ゲーム画面 ---
 const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
   const [score, setScore] = useState(0); const [combo, setCombo] = useState(0); const [maxCombo, setMaxCombo] = useState(0); const [qIndex, setQIndex] = useState(0); const [ans, setAns] = useState('');
-  const [correctCount, setCorrectCount] = useState(0); 
+  const [correctCount, setCorrectCount] = useState(0);
   const [startTime] = useState(Date.now()); const [currentTime, setCurrentTime] = useState(Date.now());
   const elapsedMs = currentTime - startTime; const elapsedSec = Math.floor(elapsedMs / 1000); const remainSec = Math.max(0, state.timeLimitSec - elapsedSec);
   const [showMemo, setShowMemo] = useState(false); const [memoPosition, setMemoPosition] = useState('right');
   const canvasRef = useRef(null); const [fever, setFever] = useState(false); const [cardAnim, setCardAnim] = useState({});
   const mistakesRef = useRef([]);
+
+  const isMultiplayer = peerState && peerState.role;
+  const participantsList = isMultiplayer ? Object.entries(peerState.participants || {}).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.score - a.score) : [];
+  const top5 = participantsList.slice(0, 5);
 
   useEffect(() => { setFever(combo >= 5); }, [combo]);
 
@@ -2025,25 +2030,25 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
     newStats.maxComboRecord = Math.max(newStats.maxComboRecord || 0, maxComboRef.current);
     const exactElapsedSec = Number(((Date.now() - startTime) / 1000).toFixed(1));
 
-    if (state.gameMode === 'TIME_ATTACK' && correctCountRef.current >= state.problemSet.length) { 
-      const rec = newStats.timeAttackRecord || 9999; if (exactElapsedSec < rec || rec === 0) newStats.timeAttackRecord = exactElapsedSec; 
+    if (state.gameMode === 'TIME_ATTACK' && correctCountRef.current >= state.problemSet.length) {
+      const rec = newStats.timeAttackRecord || 9999; if (exactElapsedSec < rec || rec === 0) newStats.timeAttackRecord = exactElapsedSec;
     }
     if (state.gameMode === 'SUDDEN_DEATH') { newStats.suddenDeathRecord = Math.max(newStats.suddenDeathRecord || 0, correctCountRef.current); }
-    
+
     let baseExp = scoreRef.current;
     if (state.gameMode === 'TIME_ATTACK') baseExp = 1000 + Math.max(0, Math.floor(120 - exactElapsedSec) * 10);
     if (state.gameMode === 'SUDDEN_DEATH') baseExp = correctCountRef.current * 50;
-    
+
     newStats = StorageAPI.updateDailyAndMissions(newStats, baseExp, maxComboRef.current, 1, state.gameMode, correctCountRef.current);
     StorageAPI.saveStats(newStats); setStats(newStats);
 
     setState(prev => ({ ...prev, finalScore: baseExp, finalCombo: maxComboRef.current, finalTime: exactElapsedSec, finalCorrect: correctCountRef.current, earnedExp: baseExp, previousExp: stats.totalExp, mistakes: mistakesRef.current }));
-    
+
     // ホストに終了通知
     if (peerState && peerState.role === 'client' && peerState.conn) {
-       peerState.conn.send({ type: 'game_finish', data: { finalScore: baseExp } });
+      peerState.conn.send({ type: 'game_finish', data: { finalScore: baseExp } });
     }
-    
+
     setView('result');
   }, [stats, state.gameMode, state.courseName, state.problemSet, startTime, setStats, setState, setView, peerState]);
 
@@ -2059,13 +2064,13 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
       setCorrectCount(c => c + 1);
       setCardAnim({ scale: [1, 1.05, 1], boxShadow: ["0 8px 0 var(--text)", "0 0 20px var(--secondary)", "0 8px 0 var(--text)"], transition: { duration: 0.3 } });
       setAns(''); canvasRef.current?.clear();
-      
-      if (state.gameMode === 'TIME_ATTACK' && correctCount + 1 >= state.problemSet.length) { setTimeout(finishGame, 500); } 
+
+      if (state.gameMode === 'TIME_ATTACK' && correctCount + 1 >= state.problemSet.length) { setTimeout(finishGame, 500); }
       else { setQIndex(i => (i + 1) % state.problemSet.length); }
     } else {
       audioCtrl.playSE('wrong'); setCombo(0);
       setCardAnim({ x: [-15, 15, -10, 10, 0], boxShadow: ["0 8px 0 var(--text)", "0 0 20px var(--primary)", "0 8px 0 var(--text)"], transition: { duration: 0.4 } });
-      setAns(''); mistakesRef.current.push({q: q.q, a: q.a.join('|')});
+      setAns(''); mistakesRef.current.push({ q: q.q, a: q.a.join('|') });
       if (state.gameMode === 'SUDDEN_DEATH') setTimeout(finishGame, 500);
     }
   }, [ans, qIndex, combo, correctCount, state.problemSet, state.gameMode, finishGame]);
@@ -2081,30 +2086,45 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
     window.addEventListener('keydown', handleKey); return () => window.removeEventListener('keydown', handleKey);
   }, [submitAns]);
 
-  const q = state.problemSet[qIndex] || {q:'?', a:['?']};
+  const q = state.problemSet[qIndex] || { q: '?', a: ['?'] };
   const displaySec = state.gameMode === 'SCORE_ATTACK' ? remainSec : elapsedSec;
   const m = Math.floor(displaySec / 60).toString().padStart(2, '0'); const s = (displaySec % 60).toString().padStart(2, '0');
   const progress = state.gameMode === 'SCORE_ATTACK' ? (remainSec / state.timeLimitSec) * 100 : (correctCount / state.problemSet.length) * 100;
 
   const textLen = q.q.length;
   let fontSizeClass = "text-[5rem] md:text-8xl";
-  if (textLen >= 25) { fontSizeClass = "text-xl md:text-3xl"; } 
-  else if (textLen >= 15) { fontSizeClass = "text-2xl md:text-5xl"; } 
+  if (textLen >= 25) { fontSizeClass = "text-xl md:text-3xl"; }
+  else if (textLen >= 15) { fontSizeClass = "text-2xl md:text-5xl"; }
   else if (textLen >= 8) { fontSizeClass = "text-4xl md:text-6xl"; }
 
   return (
     <motion.div animate={fever ? { backgroundColor: ["var(--bg)", "var(--panel)", "var(--bg)"] } : {}} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="absolute inset-0 w-full h-[100dvh] flex flex-col z-10 overflow-hidden bg-[var(--bg)]">
       {state.gameMode !== 'SUDDEN_DEATH' && (
         <div className="h-2 w-full bg-[var(--text)] opacity-20 shrink-0 relative">
-          <motion.div className="h-full absolute top-0 left-0 bg-[var(--primary)] opacity-100 z-10" animate={{ width: `${progress}%`, backgroundColor: (state.gameMode==='SCORE_ATTACK'&&remainSec<=10) ? '#ef4444' : 'var(--primary)' }} transition={{ ease: 'linear', duration: 0.2 }} />
+          <motion.div className="h-full absolute top-0 left-0 bg-[var(--primary)] opacity-100 z-10" animate={{ width: `${progress}%`, backgroundColor: (state.gameMode === 'SCORE_ATTACK' && remainSec <= 10) ? '#ef4444' : 'var(--primary)' }} transition={{ ease: 'linear', duration: 0.2 }} />
         </div>
       )}
 
       <div className={`flex-grow flex flex-col ${memoPosition === 'right' ? 'md:flex-row' : 'md:flex-row-reverse'} overflow-y-auto md:overflow-hidden relative w-full h-full`}>
+        {/* ランキング表示 */}
+        {isMultiplayer && top5.length > 0 && (
+          <div className="flex justify-center gap-2 p-2 overflow-x-auto no-scrollbar shrink-0 w-full bg-[var(--panel)] border-b-2 border-[var(--text)] shadow-sm">
+            {top5.map((p, idx) => (
+              <div key={p.id} className="bg-[var(--bg)] border-2 border-[var(--text)] rounded-lg px-2 py-1 flex flex-col items-center min-w-[70px]">
+                <div className="flex items-center gap-1">
+                  <span className={`text-[10px] font-black px-1.5 rounded-sm ${idx === 0 ? 'bg-yellow-400 text-white' : idx === 1 ? 'bg-gray-400 text-white' : idx === 2 ? 'bg-orange-400 text-white' : 'text-[var(--text)] opacity-50'}`}>{idx + 1}</span>
+                  <span className="text-[10px] font-bold truncate max-w-[50px]">{p.name}</span>
+                </div>
+                <span className="text-xs text-[var(--primary)] font-black">{p.score}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className={`flex flex-col flex-shrink-0 transition-all duration-300 ${showMemo ? 'w-full md:w-[400px] min-h-[85vh] md:min-h-0 border-b md:border-b-0 md:border-r border-[var(--text)]' : 'w-full max-w-4xl mx-auto h-full'} md:h-full p-4`}>
-          
+
           <div className="flex justify-between items-center mb-2 shrink-0">
-            <div className={`font-black text-2xl flex items-center gap-2 ${(state.gameMode==='SCORE_ATTACK'&&remainSec<=10) ? 'text-red-500 animate-pulse' : 'text-[var(--text)]'}`}><Clock size={24} /> {m}:{s}</div>
+            <div className={`font-black text-2xl flex items-center gap-2 ${(state.gameMode === 'SCORE_ATTACK' && remainSec <= 10) ? 'text-red-500 animate-pulse' : 'text-[var(--text)]'}`}><Clock size={24} /> {m}:{s}</div>
             <div className="font-black text-2xl text-[var(--primary)] flex items-center gap-2 drop-shadow-sm">
               {state.gameMode === 'TIME_ATTACK' ? <>{correctCount} / {state.problemSet.length} 問</> : state.gameMode === 'SUDDEN_DEATH' ? <>{correctCount} 問正解</> : <>{score} <span className="text-sm text-[var(--text)] opacity-50">pt</span></>}
             </div>
@@ -2131,21 +2151,21 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
 
           <div className="flex-grow flex flex-col gap-2 z-30 min-h-[30vh]">
             <div className="flex h-14 gap-2 shrink-0">
-              {['.', '/', '-', '(', ')'].map(c => <motion.button whileTap={{ scale: 0.9, y: 2, boxShadow:"none" }} key={c} className="flex-1 bg-[var(--panel)] text-[var(--secondary)] border-2 border-[var(--secondary)] rounded-xl font-black text-xl shadow-[0_2px_0_var(--secondary)] flex items-center justify-center select-none outline-none touch-manipulation" onPointerDown={(e)=>{e.preventDefault(); audioCtrl.playSE('click'); setAns(a=>a.length<15?a+c:a);}}>{c}</motion.button>)}
+              {['.', '/', '-', '(', ')'].map(c => <motion.button whileTap={{ scale: 0.9, y: 2, boxShadow: "none" }} key={c} className="flex-1 bg-[var(--panel)] text-[var(--secondary)] border-2 border-[var(--secondary)] rounded-xl font-black text-xl shadow-[0_2px_0_var(--secondary)] flex items-center justify-center select-none outline-none touch-manipulation" onPointerDown={(e) => { e.preventDefault(); audioCtrl.playSE('click'); setAns(a => a.length < 15 ? a + c : a); }}>{c}</motion.button>)}
             </div>
             <div className="grid grid-cols-3 gap-2 flex-grow">
-              {['7','8','9','4','5','6','1','2','3'].map(n => <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} key={n} className="bg-[var(--panel)] text-[var(--primary)] border-[3px] border-[var(--primary)] rounded-2xl font-black text-3xl shadow-[0_4px_0_var(--primary)] flex items-center justify-center select-none outline-none touch-manipulation" onPointerDown={(e)=>{e.preventDefault(); audioCtrl.playSE('click'); setAns(a=>a.length<15?a+n:a);}}>{n}</motion.button>)}
-              <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} className="bg-[var(--text)] opacity-50 text-[var(--panel)] font-black text-3xl rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.5)] outline-none flex items-center justify-center select-none touch-manipulation" onPointerDown={(e)=>{e.preventDefault(); audioCtrl.playSE('click'); setAns('');}}>C</motion.button>
-              <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} className="bg-[var(--panel)] text-[var(--primary)] border-[3px] border-[var(--primary)] rounded-2xl font-black text-3xl shadow-[0_4px_0_var(--primary)] flex items-center justify-center select-none outline-none touch-manipulation" onPointerDown={(e)=>{e.preventDefault(); audioCtrl.playSE('click'); setAns(a=>a.length<15?a+'0':a);}}>0</motion.button>
-              <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} className="bg-[var(--secondary)] text-[var(--panel)] border-[3px] border-[var(--text)] font-black text-3xl rounded-2xl shadow-[0_4px_0_var(--text)] outline-none flex items-center justify-center select-none touch-manipulation" onPointerDown={(e)=>{e.preventDefault(); submitAns();}}>OK</motion.button>
+              {['7', '8', '9', '4', '5', '6', '1', '2', '3'].map(n => <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} key={n} className="bg-[var(--panel)] text-[var(--primary)] border-[3px] border-[var(--primary)] rounded-2xl font-black text-3xl shadow-[0_4px_0_var(--primary)] flex items-center justify-center select-none outline-none touch-manipulation" onPointerDown={(e) => { e.preventDefault(); audioCtrl.playSE('click'); setAns(a => a.length < 15 ? a + n : a); }}>{n}</motion.button>)}
+              <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} className="bg-[var(--text)] opacity-50 text-[var(--panel)] font-black text-3xl rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.5)] outline-none flex items-center justify-center select-none touch-manipulation" onPointerDown={(e) => { e.preventDefault(); audioCtrl.playSE('click'); setAns(''); }}>C</motion.button>
+              <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} className="bg-[var(--panel)] text-[var(--primary)] border-[3px] border-[var(--primary)] rounded-2xl font-black text-3xl shadow-[0_4px_0_var(--primary)] flex items-center justify-center select-none outline-none touch-manipulation" onPointerDown={(e) => { e.preventDefault(); audioCtrl.playSE('click'); setAns(a => a.length < 15 ? a + '0' : a); }}>0</motion.button>
+              <motion.button whileTap={{ scale: 0.9, y: 4, boxShadow: "none" }} className="bg-[var(--secondary)] text-[var(--panel)] border-[3px] border-[var(--text)] font-black text-3xl rounded-2xl shadow-[0_4px_0_var(--text)] outline-none flex items-center justify-center select-none touch-manipulation" onPointerDown={(e) => { e.preventDefault(); submitAns(); }}>OK</motion.button>
             </div>
           </div>
         </div>
 
         <div className={`w-full md:flex-grow relative transition-all duration-300 h-[500px] md:h-full flex-shrink-0 md:flex-shrink p-4 md:p-6 flex flex-col gap-2 ${showMemo ? 'opacity-100 flex' : 'hidden opacity-0'}`}>
-           <div className="flex-grow relative">
-             <HandWritingCanvas ref={canvasRef} />
-           </div>
+          <div className="flex-grow relative">
+            <HandWritingCanvas ref={canvasRef} />
+          </div>
         </div>
       </div>
     </motion.div>
@@ -2153,11 +2173,16 @@ const GameView = ({ state, setState, setView, stats, setStats, peerState }) => {
 };
 
 // --- リザルト画面 (おさらいレポート付き) ---
-const ResultView = ({ state, setView, peerState }) => {
+const ResultView = ({ state, setView, peerState, leaveRoom }) => {
   const oldExp = state.previousExp || 0; const earnedExp = state.earnedExp || 0; const newExp = oldExp + earnedExp;
   const oldInfo = getLevelInfo(oldExp); const newInfo = getLevelInfo(newExp);
   const mistakes = state.mistakes || [];
   const [showLevelUp, setShowLevelUp] = useState(false);
+
+  const isMultiplayer = peerState && peerState.role;
+  const participantsList = isMultiplayer ? Object.entries(peerState.participants || {}).map(([id, p]) => ({ id, ...p })).sort((a, b) => b.score - a.score) : [];
+  const myRank = isMultiplayer && peerState.role === 'client' && peerState.peer ? participantsList.findIndex(p => p.id === peerState.peer.id) + 1 : null;
+  const top5 = participantsList.slice(0, 5);
 
   useEffect(() => {
     triggerConfetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#FF6B6B', '#4ECDC4', '#FFE66D'] });
@@ -2168,10 +2193,10 @@ const ResultView = ({ state, setView, peerState }) => {
     <div className="flex flex-col min-h-[80vh] py-4 relative">
       <AnimatePresence>
         {showLevelUp && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.5, y: 50 }} 
-            animate={{ opacity: 1, scale: 1, y: 0 }} 
-            exit={{ opacity: 0, scale: 0.5, y: 50 }} 
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 50 }}
             transition={{ type: "spring", bounce: 0.5 }}
             className="absolute inset-0 z-50 flex items-center justify-center bg-[var(--bg)]/80 backdrop-blur-sm rounded-[20px] m-4"
           >
@@ -2186,23 +2211,72 @@ const ResultView = ({ state, setView, peerState }) => {
       </AnimatePresence>
 
       <motion.h2 initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", bounce: 0.6 }} className="font-black text-5xl text-center mb-4 text-[var(--primary)] shrink-0">
-        {state.gameMode === 'SUDDEN_DEATH' ? <span className="text-[var(--text)]"><HeartCrack size={40} className="inline mr-2 text-red-500 mb-2"/>終了！</span> : '🎉 FINISH!'}
+        {state.gameMode === 'SUDDEN_DEATH' ? <span className="text-[var(--text)]"><HeartCrack size={40} className="inline mr-2 text-red-500 mb-2" />終了！</span> : '🎉 FINISH!'}
       </motion.h2>
-      
-      <div className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] shadow-[4px_4px_0_var(--text)] p-6 text-center w-full mb-6 shrink-0 relative overflow-hidden">
-        {state.gameMode === 'SCORE_ATTACK' && <><h4 className="text-[var(--text)] opacity-70 font-bold mb-1">SCORE</h4><div className="text-6xl font-black text-[var(--text)] mb-2">{state.finalScore || 0}</div></>}
-        {state.gameMode === 'TIME_ATTACK' && <><h4 className="text-[var(--text)] opacity-70 font-bold mb-1">CLEAR TIME</h4><div className="text-6xl font-black text-[var(--secondary)] mb-2">{state.finalTime.toFixed(1)} <span className="text-2xl">秒</span></div></>}
-        {state.gameMode === 'SUDDEN_DEATH' && <><h4 className="text-[var(--text)] opacity-70 font-bold mb-1">連続正解数</h4><div className="text-6xl font-black text-[var(--primary)] mb-2">{state.finalCorrect} <span className="text-2xl">問</span></div></>}
-        
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-xl font-black text-[var(--secondary)] mb-4 flex flex-col items-center justify-center gap-1">
-           <div className="flex items-center gap-1">⬆ {earnedExp} EXP かくとく！</div>
-        </motion.div>
-        <div className="inline-block bg-[var(--accent)] text-[var(--text)] font-black px-5 py-2 rounded-full border-[3px] border-[var(--text)] shadow-sm">Max Combo: {state.finalCombo || 0}</div>
-      </div>
+
+      {isMultiplayer && participantsList.length > 0 ? (
+        <div className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] p-4 w-full mb-6 shrink-0 relative overflow-hidden flex flex-col items-center shadow-[4px_4px_0_var(--text)]">
+          <h3 className="font-black text-xl mb-6 text-[var(--text)] flex items-center gap-2"><Trophy size={24} className="text-yellow-400" /> 最終ランキング</h3>
+
+          <div className="flex items-end justify-center gap-2 h-36 w-full mb-6 px-2">
+            {top5[1] && (
+              <div className="flex flex-col items-center w-1/4 h-full justify-end">
+                <span className="font-bold text-[10px] sm:text-xs truncate w-full text-center">{top5[1].name}</span>
+                <span className="font-black text-xs sm:text-sm text-[var(--secondary)] mb-1">{top5[1].score}</span>
+                <div className="w-full bg-gray-300 h-[60%] rounded-t-lg border-2 border-[var(--text)] border-b-0 flex justify-center pt-2 font-black text-xl text-white shadow-inner">2</div>
+              </div>
+            )}
+            {top5[0] && (
+              <div className="flex flex-col items-center w-1/3 h-full justify-end">
+                <span className="font-bold text-xs sm:text-sm truncate w-full text-center">{top5[0].name}</span>
+                <span className="font-black text-sm sm:text-base text-[var(--primary)] mb-1">{top5[0].score}</span>
+                <div className="w-full bg-yellow-400 h-[85%] rounded-t-lg border-2 border-[var(--text)] border-b-0 flex justify-center pt-2 font-black text-3xl text-white shadow-inner">1</div>
+              </div>
+            )}
+            {top5[2] && (
+              <div className="flex flex-col items-center w-1/4 h-full justify-end">
+                <span className="font-bold text-[10px] sm:text-xs truncate w-full text-center">{top5[2].name}</span>
+                <span className="font-black text-xs sm:text-sm text-[var(--text)] opacity-70 mb-1">{top5[2].score}</span>
+                <div className="w-full bg-orange-300 h-[40%] rounded-t-lg border-2 border-[var(--text)] border-b-0 flex justify-center pt-2 font-black text-lg text-white shadow-inner">3</div>
+              </div>
+            )}
+          </div>
+
+          {top5.length > 3 && (
+            <div className="flex flex-wrap justify-center gap-2 w-full">
+              {top5.slice(3, 5).map((p, i) => (
+                <div key={p.id} className="flex gap-2 items-center bg-[var(--bg)] px-3 py-1.5 rounded-lg border-2 border-[var(--text)]">
+                  <span className="font-black text-gray-500 text-xs">#{i + 4}</span>
+                  <span className="font-bold text-sm max-w-[80px] truncate">{p.name}</span>
+                  <span className="font-black text-sm">{p.score} pt</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {myRank && myRank > 0 && (
+            <div className="mt-4 pt-4 border-t-2 border-dashed border-gray-200 w-full text-center bg-[var(--bg)] rounded-xl p-3">
+              <span className="font-bold text-[var(--text)] text-sm">あなたの順位 </span>
+              <span className="font-black text-3xl text-[var(--primary)] ml-2">{myRank} <span className="text-lg">位</span></span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] shadow-[4px_4px_0_var(--text)] p-6 text-center w-full mb-6 shrink-0 relative overflow-hidden">
+          {state.gameMode === 'SCORE_ATTACK' && <><h4 className="text-[var(--text)] opacity-70 font-bold mb-1">SCORE</h4><div className="text-6xl font-black text-[var(--text)] mb-2">{state.finalScore || 0}</div></>}
+          {state.gameMode === 'TIME_ATTACK' && <><h4 className="text-[var(--text)] opacity-70 font-bold mb-1">CLEAR TIME</h4><div className="text-6xl font-black text-[var(--secondary)] mb-2">{state.finalTime.toFixed(1)} <span className="text-2xl">秒</span></div></>}
+          {state.gameMode === 'SUDDEN_DEATH' && <><h4 className="text-[var(--text)] opacity-70 font-bold mb-1">連続正解数</h4><div className="text-6xl font-black text-[var(--primary)] mb-2">{state.finalCorrect} <span className="text-2xl">問</span></div></>}
+
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-xl font-black text-[var(--secondary)] mb-4 flex flex-col items-center justify-center gap-1">
+            <div className="flex items-center gap-1">⬆ {earnedExp} EXP かくとく！</div>
+          </motion.div>
+          <div className="inline-block bg-[var(--accent)] text-[var(--text)] font-black px-5 py-2 rounded-full border-[3px] border-[var(--text)] shadow-sm">Max Combo: {state.finalCombo || 0}</div>
+        </div>
+      )}
 
       {mistakes.length > 0 && (
         <div className="bg-[var(--panel)] border-[3px] border-[var(--primary)] rounded-[20px] p-4 mb-6 shrink-0 shadow-sm">
-          <h4 className="font-black text-[var(--primary)] mb-3 flex items-center justify-center gap-2"><PenTool size={20}/> おさらい（まちがえた問題）</h4>
+          <h4 className="font-black text-[var(--primary)] mb-3 flex items-center justify-center gap-2"><PenTool size={20} /> おさらい（まちがえた問題）</h4>
           <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2 no-scrollbar">
             {mistakes.map((m, i) => (
               <div key={i} className="flex justify-between items-center border-b-2 border-dashed border-[var(--bg)] pb-2">
@@ -2216,14 +2290,23 @@ const ResultView = ({ state, setView, peerState }) => {
           </div>
         </div>
       )}
-      
+
       <div className="mt-auto shrink-0 pt-4">
-        {peerState && peerState.role === 'client' ? (
-           <div className="bg-[var(--accent)] border-[3px] border-[var(--text)] rounded-xl p-4 text-center font-bold text-[var(--text)]">
-             リーダーの画面がかわるまで待っていてね
-           </div>
+        {isMultiplayer ? (
+          <div className="flex flex-col gap-3">
+            {peerState.role === 'client' && (
+              <div className="bg-[var(--accent)] border-[3px] border-[var(--text)] rounded-xl p-4 text-center font-bold text-[var(--text)]">
+                リーダーの画面がかわるまで待っていてね
+              </div>
+            )}
+            <MotionButton className="bg-[var(--panel)] text-[var(--text)] w-full py-3 text-lg border-[3px] border-[var(--text)]" onClick={leaveRoom}>
+              <Home size={20} /> ルームから退出してホームへ戻る
+            </MotionButton>
+          </div>
         ) : (
-           <MotionButton className="bg-[var(--text)] w-full py-4 text-[var(--panel)] text-xl border-[3px] border-[var(--text)]" onClick={() => setView(peerState && peerState.role === 'host' ? 'hostRoom' : 'home')}><Home size={24} /> {peerState && peerState.role === 'host' ? 'リーダーのルームへ戻る' : 'ホームへ戻る'}</MotionButton>
+          <MotionButton className="bg-[var(--text)] w-full py-4 text-[var(--panel)] text-xl border-[3px] border-[var(--text)]" onClick={() => setView('home')}>
+            <Home size={24} /> ホームへ戻る
+          </MotionButton>
         )}
       </div>
     </div>
@@ -2242,7 +2325,7 @@ const ManagerView = ({ setView }) => {
 
   const openEdit = (name) => {
     setEditTarget(name); setEditName(name);
-    if (name) { const res = StorageAPI.getProblemsByGroup(name); setProbs(res.length ? res.map(p => ({ q: p.q, a: String(p.a) })) : [{q:'', a:''}]); } else { setProbs(Array(3).fill({q:'', a:''})); }
+    if (name) { const res = StorageAPI.getProblemsByGroup(name); setProbs(res.length ? res.map(p => ({ q: p.q, a: String(p.a) })) : [{ q: '', a: '' }]); } else { setProbs(Array(3).fill({ q: '', a: '' })); }
   };
   const save = () => {
     if (!editName.trim()) return showToast('warning', '名前を入力してください');
@@ -2251,18 +2334,18 @@ const ManagerView = ({ setView }) => {
     showToast('success', '保存しました'); setEditTarget(null); loadGroups();
   };
   const executeDelete = () => {
-    if (!editTarget) return; 
-    StorageAPI.deleteProblemGroup(editTarget); 
-    setEditTarget(null); 
+    if (!editTarget) return;
+    StorageAPI.deleteProblemGroup(editTarget);
+    setEditTarget(null);
     setConfirmDelete(false);
-    loadGroups(); 
+    loadGroups();
     showToast('success', '削除しました');
   };
-  
-  const copyShareCode = (e, name) => { 
-    e.stopPropagation(); audioCtrl.playSE('click'); 
+
+  const copyShareCode = (e, name) => {
+    e.stopPropagation(); audioCtrl.playSE('click');
     const code = StorageAPI.encodeCourse(name, StorageAPI.getProblemsByGroup(name));
-    
+
     const textArea = document.createElement("textarea");
     textArea.value = code;
     document.body.appendChild(textArea);
@@ -2284,35 +2367,35 @@ const ManagerView = ({ setView }) => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
               <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="bg-[var(--panel)] border-[4px] border-[var(--text)] rounded-[20px] shadow-xl p-6 w-full max-w-xs flex flex-col items-center text-center">
                 <Trash2 size={48} className="text-[var(--primary)] mb-3" />
-                <h3 className="font-black text-xl text-[var(--text)] mb-6 leading-snug">「{editTarget}」を<br/>本当に削除しますか？</h3>
+                <h3 className="font-black text-xl text-[var(--text)] mb-6 leading-snug">「{editTarget}」を<br />本当に削除しますか？</h3>
                 <div className="flex w-full gap-3">
-                  <MotionButton className="bg-[var(--bg)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => {audioCtrl.playSE('click'); setConfirmDelete(false);}}>やめる</MotionButton>
-                  <MotionButton className="bg-[var(--primary)] text-[var(--panel)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => {audioCtrl.playSE('click'); executeDelete();}}>削除する</MotionButton>
+                  <MotionButton className="bg-[var(--bg)] text-[var(--text)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => { audioCtrl.playSE('click'); setConfirmDelete(false); }}>やめる</MotionButton>
+                  <MotionButton className="bg-[var(--primary)] text-[var(--panel)] border-[3px] border-[var(--text)] py-3 flex-1" onClick={() => { audioCtrl.playSE('click'); executeDelete(); }}>削除する</MotionButton>
                 </div>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="flex justify-between items-center mb-4 shrink-0"><h3 className="font-bold text-xl flex items-center gap-2 text-[var(--text)]"><Settings size={20} /> コース編集</h3>{editTarget && <button className="text-[var(--panel)] font-bold border-2 border-[var(--primary)] bg-[var(--primary)] rounded-xl px-4 py-1.5 text-sm" onClick={()=>{audioCtrl.playSE('click'); setConfirmDelete(true);}}>削除</button>}</div>
-        <div className="bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-xl p-2 mb-4 shrink-0 shadow-sm"><input type="text" className="w-full font-bold text-lg p-2 outline-none bg-transparent text-[var(--text)]" placeholder="コース名 (例: 1年_たしざん)" value={editName} onChange={e=>setEditName(e.target.value)} /></div>
+        <div className="flex justify-between items-center mb-4 shrink-0"><h3 className="font-bold text-xl flex items-center gap-2 text-[var(--text)]"><Settings size={20} /> コース編集</h3>{editTarget && <button className="text-[var(--panel)] font-bold border-2 border-[var(--primary)] bg-[var(--primary)] rounded-xl px-4 py-1.5 text-sm" onClick={() => { audioCtrl.playSE('click'); setConfirmDelete(true); }}>削除</button>}</div>
+        <div className="bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-xl p-2 mb-4 shrink-0 shadow-sm"><input type="text" className="w-full font-bold text-lg p-2 outline-none bg-transparent text-[var(--text)]" placeholder="コース名 (例: 1年_たしざん)" value={editName} onChange={e => setEditName(e.target.value)} /></div>
         <div className="bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-xl flex flex-col flex-grow overflow-hidden mb-4 shadow-sm">
           <div className="bg-[var(--bg)] flex p-3 border-b-2 border-[var(--text)] font-bold text-sm text-[var(--text)] opacity-70 shrink-0"><div className="flex-grow px-2">問題</div><div className="w-24 px-2 text-center border-l-2 border-[var(--text)]">答え</div><div className="w-12 border-l-2 border-[var(--text)]"></div></div>
           <div className="flex-grow overflow-y-auto">
             <AnimatePresence>
               {probs.map((p, i) => (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} key={i} className="flex border-b-2 border-dashed border-[var(--bg)] overflow-hidden">
-                  <input type="text" className="flex-grow p-3 outline-none font-bold bg-transparent text-[var(--text)]" placeholder="問題" value={p.q} onChange={e => {const n=[...probs]; n[i].q=e.target.value; setProbs(n);}} />
-                  <input type="text" className="w-24 p-3 outline-none border-l-2 border-dashed border-[var(--bg)] text-center font-bold text-[var(--primary)] bg-transparent" placeholder="答え" value={p.a} onChange={e => {const n=[...probs]; n[i].a=e.target.value; setProbs(n);}} />
-                  <button className="w-12 border-l-2 border-dashed border-[var(--bg)] text-[var(--text)] opacity-30 hover:opacity-100 flex items-center justify-center transition-opacity" onClick={() => {audioCtrl.playSE('click'); setProbs(probs.filter((_, idx)=>idx!==i))}}><XCircle size={20} /></button>
+                  <input type="text" className="flex-grow p-3 outline-none font-bold bg-transparent text-[var(--text)]" placeholder="問題" value={p.q} onChange={e => { const n = [...probs]; n[i].q = e.target.value; setProbs(n); }} />
+                  <input type="text" className="w-24 p-3 outline-none border-l-2 border-dashed border-[var(--bg)] text-center font-bold text-[var(--primary)] bg-transparent" placeholder="答え" value={p.a} onChange={e => { const n = [...probs]; n[i].a = e.target.value; setProbs(n); }} />
+                  <button className="w-12 border-l-2 border-dashed border-[var(--bg)] text-[var(--text)] opacity-30 hover:opacity-100 flex items-center justify-center transition-opacity" onClick={() => { audioCtrl.playSE('click'); setProbs(probs.filter((_, idx) => idx !== i)) }}><XCircle size={20} /></button>
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
-          <button className="bg-[var(--bg)] hover:bg-[var(--accent)] text-[var(--text)] font-bold p-3 border-t-2 border-[var(--text)] shrink-0 transition-colors flex items-center justify-center gap-2" onClick={()=>{audioCtrl.playSE('click'); setProbs([...probs, {q:'', a:''}])}}><Plus size={20} /> 問題を追加</button>
+          <button className="bg-[var(--bg)] hover:bg-[var(--accent)] text-[var(--text)] font-bold p-3 border-t-2 border-[var(--text)] shrink-0 transition-colors flex items-center justify-center gap-2" onClick={() => { audioCtrl.playSE('click'); setProbs([...probs, { q: '', a: '' }]) }}><Plus size={20} /> 問題を追加</button>
         </div>
         <div className="flex gap-3 shrink-0 pb-4">
-          <MotionButton className="bg-[var(--bg)] text-[var(--text)] w-1/3 py-3 border-[3px] border-[var(--text)]" onClick={()=>setEditTarget(null)}>キャンセル</MotionButton>
+          <MotionButton className="bg-[var(--bg)] text-[var(--text)] w-1/3 py-3 border-[3px] border-[var(--text)]" onClick={() => setEditTarget(null)}>キャンセル</MotionButton>
           <MotionButton className="bg-[var(--primary)] text-[var(--panel)] flex-grow py-3 border-[3px] border-[var(--text)]" onClick={save}>保存する</MotionButton>
         </div>
       </div>
@@ -2328,18 +2411,18 @@ const ManagerView = ({ setView }) => {
       </div>
       <div className="bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-xl flex-grow overflow-y-auto mb-4 shadow-sm p-2">
         {filteredGroups.length === 0 ? <div className="text-center text-[var(--text)] opacity-50 py-10 font-bold">コースがありません</div> : filteredGroups.map(g => (
-          <div key={g.name} className="p-3 border-b border-dashed border-[var(--bg)] cursor-pointer flex justify-between items-center transition-colors rounded-lg group" onClick={()=>{audioCtrl.playSE('click'); openEdit(g.name)}}>
+          <div key={g.name} className="p-3 border-b border-dashed border-[var(--bg)] cursor-pointer flex justify-between items-center transition-colors rounded-lg group" onClick={() => { audioCtrl.playSE('click'); openEdit(g.name) }}>
             <div className="flex flex-col"><span className="font-bold text-[var(--text)]">{g.name}</span><span className="text-[var(--text)] opacity-50 text-xs">{g.count}問</span></div>
-            <button className="bg-[var(--bg)] hover:bg-[var(--secondary)] hover:text-[var(--panel)] text-[var(--text)] p-2 rounded-xl transition-colors border-2 border-[var(--text)] shadow-sm" onClick={(e)=>copyShareCode(e, g.name)} title="共有コードをコピー"><Share2 size={18} /></button>
+            <button className="bg-[var(--bg)] hover:bg-[var(--secondary)] hover:text-[var(--panel)] text-[var(--text)] p-2 rounded-xl transition-colors border-2 border-[var(--text)] shadow-sm" onClick={(e) => copyShareCode(e, g.name)} title="共有コードをコピー"><Share2 size={18} /></button>
           </div>
         ))}
       </div>
       <div className="shrink-0 flex flex-col gap-3 pb-4">
         <div className="flex gap-3">
-          <MotionButton className="bg-[var(--secondary)] text-[var(--panel)] flex-grow py-3 border-[3px] border-[var(--text)]" onClick={()=>{audioCtrl.playSE('click'); setView('import')}}><Download size={20} /> 受信/AI</MotionButton>
-          <MotionButton className="bg-[var(--accent)] text-[var(--text)] flex-grow py-3 border-[3px] border-[var(--text)]" onClick={()=>{audioCtrl.playSE('click'); openEdit('')}}><Plus size={20} /> 新規作成</MotionButton>
+          <MotionButton className="bg-[var(--secondary)] text-[var(--panel)] flex-grow py-3 border-[3px] border-[var(--text)]" onClick={() => { audioCtrl.playSE('click'); setView('import') }}><Download size={20} /> 受信/AI</MotionButton>
+          <MotionButton className="bg-[var(--accent)] text-[var(--text)] flex-grow py-3 border-[3px] border-[var(--text)]" onClick={() => { audioCtrl.playSE('click'); openEdit('') }}><Plus size={20} /> 新規作成</MotionButton>
         </div>
-        <button className="text-[var(--text)] opacity-50 font-bold py-3 hover:opacity-100 transition" onClick={()=>{audioCtrl.playSE('click'); setView('home')}}>もどる</button>
+        <button className="text-[var(--text)] opacity-50 font-bold py-3 hover:opacity-100 transition" onClick={() => { audioCtrl.playSE('click'); setView('home') }}>もどる</button>
       </div>
     </div>
   );
@@ -2348,11 +2431,11 @@ const ManagerView = ({ setView }) => {
 // --- インポート画面 ---
 const ImportView = ({ setView }) => {
   const [text, setText] = useState(''); const [mode, setMode] = useState('code');
-  
+
   const copyPrompt = () => {
     audioCtrl.playSE('click');
     const prompt = `あなたは日本の小学校教育に精通したベテラン教師アシスタントです。\n指定の学年・単元の計算問題を作成します。\n# 出力ルール\n1. 形式: CSV形式（問題,答え）\n2. 正解が複数考えられる場合は「|」で区切る\n3. ヘッダーなし\n4. コードブロック内にCSVデータのみを出力`;
-    
+
     const textArea = document.createElement("textarea");
     textArea.value = prompt;
     document.body.appendChild(textArea);
@@ -2370,10 +2453,10 @@ const ImportView = ({ setView }) => {
     if (!text.trim()) return showToast('warning', 'データが空です');
     if (mode === 'code') {
       const decoded = StorageAPI.decodeCourse(text.trim());
-      if (decoded) { StorageAPI.saveProblemSet(`受信_${decoded.name}`, decoded.problems); showToast('success', `${decoded.name} を追加しました！`); setView('manager'); } 
+      if (decoded) { StorageAPI.saveProblemSet(`受信_${decoded.name}`, decoded.problems); showToast('success', `${decoded.name} を追加しました！`); setView('manager'); }
       else { showToast('error', '正しい共有コードではありません'); }
     } else {
-      const probs = []; text.split('\n').forEach(line => { const parts = line.includes(',') ? line.split(',') : line.split('\t'); if (parts.length >= 2) { const q = parts[0].trim(), a = parts[1].trim(); if (q && a && q !== '問題') probs.push({q, a}); } });
+      const probs = []; text.split('\n').forEach(line => { const parts = line.includes(',') ? line.split(',') : line.split('\t'); if (parts.length >= 2) { const q = parts[0].trim(), a = parts[1].trim(); if (q && a && q !== '問題') probs.push({ q, a }); } });
       if (!probs.length) return showToast('error', '読み込めませんでした'); StorageAPI.saveProblemSet(`AI_${new Date().toLocaleDateString()}`, probs); showToast('success', `${probs.length}問保存しました`); setView('manager');
     }
   };
@@ -2382,22 +2465,22 @@ const ImportView = ({ setView }) => {
     <div className="flex flex-col h-[70vh]">
       <h3 className="font-bold text-xl text-center mb-4 shrink-0 flex items-center justify-center gap-2 text-[var(--text)]"><Download size={24} /> コースを追加</h3>
       <div className="flex gap-2 mb-4 shrink-0 bg-[var(--text)] p-1 rounded-xl">
-        <button onClick={()=>setMode('code')} className={`flex-1 py-2 rounded-lg font-bold text-sm transition-colors ${mode==='code'?'bg-[var(--panel)] text-[var(--text)]':'text-[var(--panel)] opacity-60'}`}>共有コード</button>
-        <button onClick={()=>setMode('ai')} className={`flex-1 py-2 rounded-lg font-bold text-sm transition-colors ${mode==='ai'?'bg-[var(--panel)] text-[var(--text)]':'text-[var(--panel)] opacity-60'}`}>AI(CSV)</button>
+        <button onClick={() => setMode('code')} className={`flex-1 py-2 rounded-lg font-bold text-sm transition-colors ${mode === 'code' ? 'bg-[var(--panel)] text-[var(--text)]' : 'text-[var(--panel)] opacity-60'}`}>共有コード</button>
+        <button onClick={() => setMode('ai')} className={`flex-1 py-2 rounded-lg font-bold text-sm transition-colors ${mode === 'ai' ? 'bg-[var(--panel)] text-[var(--text)]' : 'text-[var(--panel)] opacity-60'}`}>AI(CSV)</button>
       </div>
       <div className="bg-[var(--panel)] border-[3px] border-[var(--text)] rounded-[20px] shadow-sm flex-grow flex flex-col p-5 mb-4 gap-4">
         <p className="text-sm font-bold text-[var(--text)] opacity-70 shrink-0">{mode === 'code' ? 'もらった「共有コード」を貼り付けてください。' : 'AI(ChatGPT等)が作った「問題,答え」のリストを貼り付けてください。'}</p>
-        
+
         {mode === 'ai' && (
           <button className="border-[3px] border-[var(--secondary)] text-[var(--secondary)] font-bold rounded-xl py-2 text-sm shrink-0 active:scale-95 transition-transform" onClick={copyPrompt}>
             AIへの指示(プロンプト)をコピー
           </button>
         )}
 
-        <textarea className="flex-grow border-[3px] border-[var(--text)] rounded-xl p-3 resize-none font-mono text-sm outline-none bg-[var(--bg)] text-[var(--text)]" value={text} onChange={e=>setText(e.target.value)}></textarea>
+        <textarea className="flex-grow border-[3px] border-[var(--text)] rounded-xl p-3 resize-none font-mono text-sm outline-none bg-[var(--bg)] text-[var(--text)]" value={text} onChange={e => setText(e.target.value)}></textarea>
         <MotionButton className="bg-[var(--primary)] text-[var(--panel)] py-4 shrink-0 border-[3px] border-[var(--text)]" onClick={process}>読み込んで追加</MotionButton>
       </div>
-      <button className="text-[var(--text)] opacity-50 font-bold py-3 shrink-0 pb-4" onClick={()=>{audioCtrl.playSE('click'); setView('manager')}}>もどる</button>
+      <button className="text-[var(--text)] opacity-50 font-bold py-3 shrink-0 pb-4" onClick={() => { audioCtrl.playSE('click'); setView('manager') }}>もどる</button>
     </div>
   );
 };
@@ -2412,7 +2495,7 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(audioCtrl.muted);
   const [state, setState] = useState({ problemSet: [], timeLimitSec: 0, courseName: '', finalScore: 0, finalCombo: 0, earnedExp: 0, previousExp: 0, gameMode: 'SCORE_ATTACK', mistakes: [] });
   const [stats, setStats] = useState(StorageAPI.getStats());
-  
+
   const scriptsLoaded = useExternalScripts();
 
   // P2P通信用のステート
@@ -2431,12 +2514,12 @@ export default function App() {
     }
   }, []);
 
-  // 【ホストの初期化処理】
+  // 【ホスト(先生)の初期化処理】
   const initHost = () => {
     if (!window.Peer) return showToast('error', '通信準備中です。少し待ってから再度お試しください。');
     const roomId = Math.floor(100000 + Math.random() * 900000).toString();
     const peer = new window.Peer(roomId);
-    
+
     peer.on('open', (id) => {
       setPeerState(p => ({ ...p, role: 'host', peer, hostId: id, participants: {}, connections: [] }));
       setView('hostRoom');
@@ -2447,10 +2530,18 @@ export default function App() {
       conn.on('open', () => { setPeerState(p => ({ ...p, connections: [...p.connections, conn] })); });
       conn.on('data', (rawData) => {
         if (rawData.type === 'join') {
-          setPeerState(p => ({ ...p, participants: { ...p.participants, [conn.peer]: { name: rawData.name, score: 0, combo: 0 } } }));
+          setPeerState(p => {
+            const newP = { ...p, participants: { ...p.participants, [conn.peer]: { id: conn.peer, name: rawData.name, score: 0, combo: 0 } } };
+            newP.connections.forEach(c => c.send({ type: 'participants_update', data: newP.participants }));
+            return newP;
+          });
           showToast('success', `${rawData.name} さんが参加しました`);
         } else if (rawData.type === 'score_update') {
-          setPeerState(p => ({ ...p, participants: { ...p.participants, [conn.peer]: { ...p.participants[conn.peer], score: rawData.data.score, combo: rawData.data.combo } } }));
+          setPeerState(p => {
+            const newP = { ...p, participants: { ...p.participants, [conn.peer]: { ...p.participants[conn.peer], score: rawData.data.score, combo: rawData.data.combo } } };
+            newP.connections.forEach(c => c.send({ type: 'participants_update', data: newP.participants }));
+            return newP;
+          });
         }
       });
       conn.on('close', () => { setPeerState(p => ({ ...p, connections: p.connections.filter(c => c.peer !== conn.peer) })); });
@@ -2466,7 +2557,7 @@ export default function App() {
   const initClient = (playerName, hId) => {
     if (!window.Peer) return showToast('error', '通信準備中です。');
     const peer = new window.Peer();
-    
+
     peer.on('open', () => {
       const conn = peer.connect(hId);
       conn.on('open', () => {
@@ -2480,16 +2571,36 @@ export default function App() {
           setState(prev => ({ ...prev, ...rawData.data }));
           setView('game');
         } else if (rawData.type === 'game_finish') {
-          // ホストが強制終了させた場合など
           setView('result');
+        } else if (rawData.type === 'participants_update') {
+          setPeerState(p => ({ ...p, participants: rawData.data }));
         }
       });
       conn.on('error', () => showToast('error', 'リーダーとの接続が切れました'));
     });
   };
 
+  const leaveRoom = () => {
+    audioCtrl.playSE('click');
+    if (peerState.peer && !peerState.peer.destroyed) {
+      peerState.peer.destroy();
+    }
+    setPeerState({ role: null, peer: null, conn: null, hostId: null, myName: '', connections: [], participants: {} });
+    setView('home');
+    showToast('success', 'ルームから退出しました');
+  };
+
+  const handleHomeClick = () => {
+    audioCtrl.playSE('click');
+    if (peerState.role) {
+      leaveRoom();
+    } else {
+      setView('home');
+    }
+  };
+
   useEffect(() => {
-    if (!isMuted) { if (view === 'game') audioCtrl.playBGM('game'); else if (view === 'result') { audioCtrl.stopBGM(); } else audioCtrl.playBGM('home'); } 
+    if (!isMuted) { if (view === 'game') audioCtrl.playBGM('game'); else if (view === 'result') { audioCtrl.stopBGM(); } else audioCtrl.playBGM('home'); }
     else audioCtrl.stopBGM();
   }, [view, isMuted]);
 
@@ -2527,31 +2638,31 @@ export default function App() {
       <GlobalStyle />
       {view !== 'game' && (
         <header className="flex-shrink-0 bg-[var(--panel)]/90 backdrop-blur border-b-[4px] border-[var(--accent)] py-3 px-5 flex justify-between items-center z-50 sticky top-0 shadow-sm transition-colors duration-500">
-          <div className="flex items-center cursor-pointer gap-2" onClick={()=>{audioCtrl.playSE('click'); setView('home')}}>
+          <div className="flex items-center cursor-pointer gap-2" onClick={handleHomeClick}>
             <div className="bg-[var(--secondary)] p-1.5 rounded-lg text-[var(--panel)] shadow-sm border-2 border-[var(--text)]"><Calculator size={22} strokeWidth={3} /></div>
             <h1 className="text-2xl font-black text-[var(--text)] tracking-wide">Qalc<span className="text-[var(--primary)]">.</span></h1>
           </div>
           <div className="flex items-center gap-3">
-            {peerState.role && <span className="font-bold text-xs bg-[var(--accent)] px-2 py-1 rounded border-2 border-[var(--text)]">{peerState.role === 'host' ? 'ホストモード' : 'ゲストモード'}</span>}
-            <button onClick={()=>setIsMuted(audioCtrl.toggle())} className="text-[var(--text)] opacity-50 hover:opacity-100 p-2 rounded-full transition-all focus:outline-none border-2 border-transparent hover:border-[var(--text)] hover:bg-[var(--bg)]">
+            {peerState.role && <span className="font-bold text-xs bg-[var(--accent)] px-2 py-1 rounded border-2 border-[var(--text)]">{peerState.role === 'host' ? '先生モード' : '児童モード'}</span>}
+            <button onClick={() => setIsMuted(audioCtrl.toggle())} className="text-[var(--text)] opacity-50 hover:opacity-100 p-2 rounded-full transition-all focus:outline-none border-2 border-transparent hover:border-[var(--text)] hover:bg-[var(--bg)]">
               {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} className="text-[var(--primary)]" />}
             </button>
           </div>
         </header>
       )}
-      
+
       <main className="flex-grow relative overflow-hidden">
         <AnimatePresence mode="wait">
           {view === 'home' && <PageWrapper key="home"><HomeView setView={setView} stats={stats} setStats={setStats} setConfigMode={setConfigMode} initHost={initHost} /></PageWrapper>}
           {view === 'singleConfig' && <PageWrapper key="single"><SingleConfigView setView={setView} setState={setState} configMode={configMode} /></PageWrapper>}
-          
+
           {/* 追加ビュー */}
           {view === 'hostRoom' && <PageWrapper key="host"><HostRoomView peerState={peerState} broadcast={broadcast} setView={setView} setState={setState} configMode={configMode} setConfigMode={setConfigMode} /></PageWrapper>}
           {view === 'clientJoin' && <PageWrapper key="clientJoin"><ClientJoinView initClient={initClient} urlHostId={urlHostId} setView={setView} /></PageWrapper>}
-          {view === 'clientWait' && <PageWrapper key="clientWait"><ClientWaitView peerState={peerState} /></PageWrapper>}
-          
+          {view === 'clientWait' && <PageWrapper key="clientWait"><ClientWaitView peerState={peerState} leaveRoom={leaveRoom} /></PageWrapper>}
+
           {view === 'game' && <PageWrapper key="game"><GameView state={state} setState={setState} setView={setView} stats={stats} setStats={setStats} peerState={peerState} /></PageWrapper>}
-          {view === 'result' && <PageWrapper key="result"><ResultView state={state} setView={setView} peerState={peerState} /></PageWrapper>}
+          {view === 'result' && <PageWrapper key="result"><ResultView state={state} setView={setView} peerState={peerState} leaveRoom={leaveRoom} /></PageWrapper>}
           {view === 'manager' && <PageWrapper key="manager"><ManagerView setView={setView} /></PageWrapper>}
           {view === 'import' && <PageWrapper key="import"><ImportView setView={setView} /></PageWrapper>}
           {view === 'shop' && <PageWrapper key="shop"><ShopView setView={setView} stats={stats} setStats={setStats} /></PageWrapper>}
@@ -2561,14 +2672,14 @@ export default function App() {
       {view !== 'game' && (
         <footer className="w-full bg-[var(--panel)] border-t-[3px] border-[var(--text)] pt-3 pb-2 text-center text-sm text-[var(--text)] font-bold shrink-0 z-50 transition-colors duration-500">
           <p>
-            © {new Date().getFullYear()} Qalc 
+            © {new Date().getFullYear()} Qalc
             <a href="https://note.com/cute_borage86" target="_blank" rel="noopener noreferrer" className="ml-1 text-[var(--text)] cursor-default outline-none">
               GIGA山
             </a>
           </p>
         </footer>
       )}
-      
+
       {/* カスタム通知コンポーネントを配置 */}
       <CustomToast />
     </div>
